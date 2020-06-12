@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="bNGgtx" name="Gate" projectType="audioplug" jucerVersion="5.4.7"
               companyName="James Johnson" companyWebsite="https://github.com/ImJimmi"
-              companyEmail="jimyj@hotmail.com" pluginDesc="A simple gate plugin."
+              companyEmail="jimyj@hotmail.com" pluginDesc="Look-ahead noise gate with attack and release."
               pluginManufacturerCode="Cont" pluginVST3Category="Dynamics" cppLanguageStandard="latest"
               pluginManufacturer="Contrast" pluginCode="Gate">
   <MAINGROUP id="OHZnLw" name="Gate">
