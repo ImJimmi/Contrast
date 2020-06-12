@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="bNGgtx" name="Verb" projectType="audioplug" jucerVersion="5.4.7"
               companyName="James Johnson" companyWebsite="https://github.com/ImJimmi"
-              companyEmail="jimyj@hotmail.com" pluginDesc="A simple reverb plugin."
+              companyEmail="jimyj@hotmail.com" pluginDesc="Simple mono or stereo reverb."
               pluginManufacturerCode="Cont" pluginVST3Category="Reverb" cppLanguageStandard="latest"
               pluginManufacturer="Contrast" pluginCode="Verb">
   <MAINGROUP id="OHZnLw" name="Verb">

@@ -1,2 +1,4 @@
 # Verb
-Simple reverb plugin.
+Simple mono or stereo reverb.
+
+![Screenshot of Verb](Resources/Screenshot.png)
