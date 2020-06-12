@@ -1,3 +1,7 @@
+# JUCE-Specific Directories
+Builds/
+JuceLibraryCode/
+
 # Prerequisites
 *.d
 
