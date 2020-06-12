@@ -29,7 +29,6 @@ PluginEditor::PluginEditor(PluginProcessor& p)
     thresholdSlider.setName("Threshold");
     thresholdSlider.setSliderStyle(Slider::RotaryVerticalDrag);
     thresholdSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 25);
-    thresholdSlider.addMouseListener(this, true);
     thresholdAttachment.reset(new AudioProcessorValueTreeState::SliderAttachment(
         processor.apvts,
         "threshold",
@@ -40,8 +39,7 @@ PluginEditor::PluginEditor(PluginProcessor& p)
     addAndMakeVisible(attackSlider);
     attackSlider.setName("Attack");
     attackSlider.setSliderStyle(Slider::RotaryVerticalDrag);
-    attackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 25);
-    attackSlider.addMouseListener(this, true);
+    attackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 65, 25);
     attackAttachment.reset(new AudioProcessorValueTreeState::SliderAttachment(
         processor.apvts,
         "attack",
@@ -52,8 +50,7 @@ PluginEditor::PluginEditor(PluginProcessor& p)
     addAndMakeVisible(releaseSlider);
     releaseSlider.setName("Release");
     releaseSlider.setSliderStyle(Slider::RotaryVerticalDrag);
-    releaseSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 25);
-    releaseSlider.addMouseListener(this, true);
+    releaseSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 65, 25);
     releaseAttachment.reset(new AudioProcessorValueTreeState::SliderAttachment(
         processor.apvts,
         "release",
