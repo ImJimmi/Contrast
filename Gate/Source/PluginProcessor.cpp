@@ -357,6 +357,9 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         String(),
         AudioProcessorParameter::genericParameter,
         [this](float value, int) -> String {
+            if (value == -60.f)
+                return "-INFdB";
+
             auto text = contrast::pretifyValue(value, 3) + "dB";
 
             if (text[0] != '-')
