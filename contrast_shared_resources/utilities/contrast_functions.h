@@ -39,4 +39,26 @@ namespace contrast
 
         return String(value, numDecimalPlaces);
     }
+
+    //==================================================================================================================
+    /** Interpolates between some values using a Lagrange technique. */
+    inline float interpolate(const float* const x, const float* const y, int N, float proportion)
+    {
+        auto result = 0.f;
+
+        for (int i = 0; i < N; i++)
+        {
+            auto l = 1.f;
+
+            for (int j = 0; j < N; j++)
+            {
+                if (j != i)
+                    l *= (proportion - x[j]) / (x[i] - x[j]);
+            }
+
+            result += l * y[i];
+        }
+
+        return result;
+    }
 }   // namespace contrast
