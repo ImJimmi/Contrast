@@ -48,7 +48,7 @@ void PluginProcessor::prepareToPlay(double sampleRate, int blockSize)
     // Initialise the compressors
     for (auto& compressor : compressors)
     {
-        compressor.reset(new contrast::Compressor((float)sampleRate));
+        compressor.reset(new contrast::Compressor(static_cast<float>(sampleRate)));
         jassert(compressor);
     }
 

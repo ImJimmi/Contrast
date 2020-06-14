@@ -37,7 +37,7 @@ void PluginProcessor::prepareToPlay(double sampleRate, int blockSize)
     // Initialise the current peak followers
     for (auto& follower : currentPeakFollowers)
     {
-        follower.reset(new contrast::EnvelopeFollower((float)sampleRate));
+        follower.reset(new contrast::EnvelopeFollower(static_cast<float>(sampleRate)));
         jassert(follower);
 
         follower->setAttackTime(0.f);
@@ -47,7 +47,7 @@ void PluginProcessor::prepareToPlay(double sampleRate, int blockSize)
     // Initialise the delayed peak followers
     for (auto& follower : delayedPeakFollowers)
     {
-        follower.reset(new contrast::EnvelopeFollower((float)sampleRate));
+        follower.reset(new contrast::EnvelopeFollower(static_cast<float>(sampleRate)));
         jassert(follower);
 
         follower->setAttackTime(0.f);
@@ -69,7 +69,7 @@ void PluginProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
     jassert(currentPeakFollowers.size() >= numChannels);
     jassert(delayedPeakFollowers.size() >= numChannels);
 
-    const auto sampleRate = (float)getSampleRate();
+    const auto sampleRate = static_cast<float>(getSampleRate());
 
     // Make sure to tell the host how much delay our plugin is introducing so
     // it can act accordingly.
@@ -120,7 +120,7 @@ void PluginProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
                 if (currentEnvelope > threshold)
                 {
                     gateStates[channel] = GateState::Opening;
-                    gates[channel].reset((double)sampleRate, attack * 0.001);
+                    gates[channel].reset(static_cast<double>(sampleRate), attack * 0.001);
                     gates[channel].setCurrentAndTargetValue(previousGain);
                     gates[channel].setTargetValue(1.f);
                 }
@@ -133,7 +133,7 @@ void PluginProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
                 else if (delayedEnvelope < threshold && gateStates[channel] != GateState::Closing)
                 {
                     gateStates[channel] = GateState::Closing;
-                    gates[channel].reset((double)sampleRate, release * 0.001);
+                    gates[channel].reset(static_cast<double>(sampleRate), release * 0.001);
                     gates[channel].setCurrentAndTargetValue(previousGain);
                     gates[channel].setTargetValue(0.f);
                 }
@@ -279,9 +279,9 @@ void PluginProcessor::setCurrentPreset(int presetIndex)
     // https://forum.juce.com/t/calling-setvaluenotifyinghost-from-processblock/26073/9
     JUCE_ASSERT_MESSAGE_THREAD;
 
-    auto newThreshold = (float)threshold;
-    auto newAttack = (float)attack;
-    auto newRelease = (float)release;
+    auto newThreshold = static_cast<float>(threshold);
+    auto newAttack = static_cast<float>(attack);
+    auto newRelease = static_cast<float>(release);
 
     if (presetIndex == 0)
     {

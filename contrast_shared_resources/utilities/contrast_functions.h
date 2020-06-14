@@ -15,7 +15,7 @@ namespace contrast
     */
     inline String pretifyValue(float value, int numSignificantFigures)
     {
-        const auto numDigitsBeforePoint = value == 0.f ? 1 : jmax(1, (int)std::floor(std::log10(std::abs(value)) + 1));
+        const auto numDigitsBeforePoint = value == 0.f ? 1 : jmax(1, static_cast<int>(std::floor(std::log10(std::abs(value))) + 1));
 
         // If the number of digits before the decimal point (i.e. for 203.1,
         // it would be 3) is greater than the required number of significant
@@ -24,7 +24,7 @@ namespace contrast
         if (numDigitsBeforePoint > numSignificantFigures)
         {
             const auto difference = numDigitsBeforePoint - numSignificantFigures;
-            return String((int)std::round(value * std::pow(10.f, -difference)) * std::pow(10.f, difference));
+            return String(static_cast<int>(std::round(value * std::pow(10.f, -difference))) * std::pow(10.f, difference));
         }
 
         // Otherwise, if the number of digits before the decimal point is less
@@ -35,7 +35,7 @@ namespace contrast
         const auto numDecimalPlaces = numSignificantFigures - numDigitsBeforePoint;
 
         if (numDecimalPlaces == 0)
-            return String((int)std::round(value));
+            return String(static_cast<int>(std::round(value)));
 
         return String(value, numDecimalPlaces);
     }

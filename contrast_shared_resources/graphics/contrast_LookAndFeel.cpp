@@ -33,7 +33,7 @@ namespace contrast
     //==================================================================================================================
     Font LookAndFeel::getLabelFont(Label& label)
     {
-        return font.withHeight(jmin((float)label.getHeight(), font.getHeight()));
+        return font.withHeight(jmin(static_cast<float>(label.getHeight()), font.getHeight()));
     }
 
     void LookAndFeel::drawLabel(Graphics& g, Label& label)
@@ -68,7 +68,7 @@ namespace contrast
 
             if (font.getStringWidth(label.getText()) > label.getWidth())
             {
-                g.drawMultiLineText(label.getText(), bounds.getX(), bounds.getY() + (int)font.getAscent() - font.getHeight() * 0.15f,
+                g.drawMultiLineText(label.getText(), bounds.getX(), bounds.getY() + static_cast<int>(font.getAscent()) - font.getHeight() * 0.15f,
                     bounds.getWidth(), label.getJustificationType(), -font.getHeight() * 0.1f);
             }
             else
@@ -102,7 +102,7 @@ namespace contrast
         if (slider.getName().isNotEmpty())
         {
             g.setColour(findColour(primaryColourId));
-            g.setFont(font.withHeight(jmin((float)slider.getTextBoxHeight(), font.getHeight())));
+            g.setFont(font.withHeight(jmin(static_cast<float>(slider.getTextBoxHeight()), font.getHeight())));
             g.drawText(
                 slider.getName().toUpperCase(),
                 bounds.removeFromTop(slider.getTextBoxHeight()).toNearestInt().translated(0, -2),
@@ -111,7 +111,7 @@ namespace contrast
         }
 
         if (slider.getTextBoxPosition() != Slider::NoTextBox)
-            bounds.removeFromBottom((float)slider.getTextBoxHeight());
+            bounds.removeFromBottom(static_cast<float>(slider.getTextBoxHeight()));
 
         const auto size = jmin(bounds.getWidth(), bounds.getHeight());
         bounds = bounds.withSizeKeepingCentre(size, size);
@@ -237,7 +237,7 @@ namespace contrast
         else
         {
             auto f = getPopupMenuFont();
-            height = (int)std::ceil(f.getHeight()) + defaultThickness * 2;
+            height = static_cast<int>(std::ceil(f.getHeight())) + defaultThickness * 2;
             width = font.getStringWidth(text) + height * 3;
         }
     }
@@ -245,7 +245,7 @@ namespace contrast
     //==================================================================================================================
     Font LookAndFeel::getComboBoxFont(ComboBox& box)
     {
-        return font.withHeight(jmin((float)box.getHeight(), font.getHeight()));
+        return font.withHeight(jmin(static_cast<float>(box.getHeight()), font.getHeight()));
     }
 
     void LookAndFeel::drawComboBox(Graphics& g, int, int, bool, int, int, int, int, ComboBox& box)
@@ -318,7 +318,7 @@ namespace contrast
     //==================================================================================================================
     int LookAndFeel::getHeaderPluginNameWidth(HeaderComponent& header)
     {
-        const auto nameFont = font.withHeight((float)header.getHeight());
+        const auto nameFont = font.withHeight(static_cast<float>(header.getHeight()));
         const auto name = String(JucePlugin_Name).toUpperCase();
         return nameFont.getStringWidth(name) + 17;
     }
@@ -331,7 +331,7 @@ namespace contrast
         auto bounds = header.getLocalBounds();
 
         {
-            const auto nameFont = font.withHeight((float)header.getHeight());
+            const auto nameFont = font.withHeight(static_cast<float>(header.getHeight()));
             const auto name = String(JucePlugin_Name).toUpperCase();
             const auto stringWidth = nameFont.getStringWidth(name) + 10;
 
@@ -359,7 +359,7 @@ namespace contrast
 
         path.clear();
         path.addEllipse(bounds);
-        g.strokePath(path, PathStrokeType((float)defaultThickness));
+        g.strokePath(path, PathStrokeType(static_cast<float>(defaultThickness)));
 
         return img;
     }
