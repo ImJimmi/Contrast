@@ -5,6 +5,7 @@ The plugins in this bundle are free for anyone to use and for anyone to edit. If
 
 ## Plugins
 - [Gate](Gate/) - Look-ahead noise gate with attack and release.
+- [Press](Press/) - Simple compressor.
 - [Verb](Verb/) - Simple mono or stereo reverb.
 
 ## Requirements
