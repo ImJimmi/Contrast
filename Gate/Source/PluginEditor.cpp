@@ -4,13 +4,8 @@
 PluginEditor::PluginEditor(PluginProcessor& p)
     :   AudioProcessorEditor(&p),
         processor(p),
-        header(PluginProcessor::presetNames, processor.getAdditionalProperty("presetIndex", 0))
+        header(PluginProcessor::presetNames, processor.getAdditionalProperty("presetIndex", 0), contrastLaF)
 {
-    // Tell this Component to use the custom LookAndFeel. All child Components
-    // will also use it since this it our top-level component. Also need to
-    // initialise the LookAndFeel with the correct colour scheme to use (white
-    // on black, or black on white).
-    setLookAndFeel(&contrastLaF);
     contrastLaF.setUseWhiteAsPrimaryColour(processor.getAdditionalProperty("useWhiteAsPrimaryColour",
                                                                            contrastLaF.isUsingWhiteAsPrimaryColour()));
 
@@ -59,6 +54,12 @@ PluginEditor::PluginEditor(PluginProcessor& p)
 
     // Set the size of our UI.
     setSize(356, 248);
+
+    // Tell this Component to use the custom LookAndFeel. All child Components
+    // will also use it since this it our top-level component. Also need to
+    // initialise the LookAndFeel with the correct colour scheme to use (white
+    // on black, or black on white).
+    setLookAndFeel(&contrastLaF);
 }
 
 PluginEditor::~PluginEditor()

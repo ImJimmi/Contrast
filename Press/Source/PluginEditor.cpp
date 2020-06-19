@@ -4,7 +4,7 @@
 PluginEditor::PluginEditor(PluginProcessor& p)
     :   AudioProcessorEditor(&p),
         processor(p),
-        header(PluginProcessor::presetNames, processor.getAdditionalProperty("presetIndex", 0))
+        header(PluginProcessor::presetNames, processor.getAdditionalProperty("presetIndex", 0), contrastLaF)
 {
     // Tell this Component to use the custom LookAndFeel. All child Components
     // will also use it since this it our top-level component. Also need to

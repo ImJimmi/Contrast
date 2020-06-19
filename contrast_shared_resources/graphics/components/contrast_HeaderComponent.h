@@ -20,7 +20,8 @@ namespace contrast
             be given here. The index of the initial preset to display is also
             required.
         */
-        HeaderComponent(const StringArray& presetNames, int initialPresetIndex)
+        HeaderComponent(const StringArray& presetNames, int initialPresetIndex, contrast::LookAndFeel& laf)
+            :   contrastLaF(laf)
         {
             // Add the previous preset button as a child and set its onClick
             // method to decrement the presetBox's index.
@@ -80,8 +81,7 @@ namespace contrast
         {
             // Have the custom LookAndFeel draw the header's background and the
             // plugin name.
-            if (auto laf = dynamic_cast<contrast::LookAndFeel*>(&getLookAndFeel()))
-                laf->drawHeaderComponentBackground(g, *this);
+            contrastLaF.drawHeaderComponentBackground(g, *this);
         }
 
         void resized() override
@@ -90,9 +90,7 @@ namespace contrast
 
             contrastButton.setBounds(bounds.removeFromRight(bounds.getHeight()).reduced(5));
 
-            if (auto laf = dynamic_cast<contrast::LookAndFeel*>(&getLookAndFeel()))
-                bounds.removeFromLeft(laf->getHeaderPluginNameWidth(*this));
-
+            bounds.removeFromLeft(contrastLaF.getHeaderPluginNameWidth(*this));
             bounds.reduce(5, 5);
 
             previousPresetButton.setBounds(bounds.removeFromLeft(bounds.getHeight()));
@@ -122,11 +120,8 @@ namespace contrast
         /** Updates the image used for the contrast button. */
         void updateContrastButtonImage()
         {
-            if (auto laf = dynamic_cast<contrast::LookAndFeel*>(&getLookAndFeel()))
-            {
-                auto img = laf->createContrastButtonImage(contrastButton.getWidth(), contrastButton.getHeight());
-                contrastButton.setImages(false, false, true, img, 1.f, {}, img, 1.f, {}, img, 1.f, {});
-            }
+            auto img = contrastLaF.createContrastButtonImage(contrastButton.getWidth(), contrastButton.getHeight());
+            contrastButton.setImages(false, false, true, img, 1.f, {}, img, 1.f, {}, img, 1.f, {});
         }
 
         /** Updates the images used for the previous and next preset buttons. */
@@ -166,14 +161,11 @@ namespace contrast
         /** Updates the colours of the presets box. */
         void updateColours()
         {
-            if (auto laf = dynamic_cast<contrast::LookAndFeel*>(&getLookAndFeel()))
-            {
-                const auto primary = laf->findColour(contrast::LookAndFeel::primaryColourId);
-                const auto secondary = laf->findColour(contrast::LookAndFeel::secondaryColourId);
+            const auto primary = contrastLaF.findColour(contrast::LookAndFeel::primaryColourId);
+            const auto secondary = contrastLaF.findColour(contrast::LookAndFeel::secondaryColourId);
 
-                presetsBox.setColour(ComboBox::backgroundColourId,  primary);
-                presetsBox.setColour(ComboBox::textColourId,        secondary);
-            }
+            presetsBox.setColour(ComboBox::backgroundColourId,  primary);
+            presetsBox.setColour(ComboBox::textColourId,        secondary);
         }
 
         /** Called when the contrast button is clicked and instructs the custom
@@ -181,18 +173,17 @@ namespace contrast
         */
         void contrastButtonClicked()
         {
-            if (auto laf = dynamic_cast<contrast::LookAndFeel*>(&getLookAndFeel()))
-            {
-                laf->setUseWhiteAsPrimaryColour(!laf->isUsingWhiteAsPrimaryColour());
+            contrastLaF.setUseWhiteAsPrimaryColour(!contrastLaF.isUsingWhiteAsPrimaryColour());
 
-                updateContrastButtonImage();
-                updateColours();
-                updateArrowImages();
-                getTopLevelComponent()->repaint();
-            }
+            updateContrastButtonImage();
+            updateColours();
+            updateArrowImages();
+            getTopLevelComponent()->repaint();
         }
 
         //==============================================================================================================
+        contrast::LookAndFeel& contrastLaF;
+
         // Changes to the previous preset in the list.
         ImageButton previousPresetButton;
 
