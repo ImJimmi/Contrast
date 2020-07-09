@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="bNGgtx" name="Verb" projectType="audioplug" jucerVersion="5.4.7"
-              companyName="James Johnson" companyWebsite="https://github.com/ImJimmi"
-              companyEmail="jimyj@hotmail.com" pluginDesc="Simple mono or stereo reverb."
-              pluginManufacturerCode="Cont" pluginVST3Category="Reverb" cppLanguageStandard="latest"
-              pluginManufacturer="Contrast" pluginCode="Verb">
+<JUCERPROJECT id="bNGgtx" name="Verb" projectType="audioplug" companyName="James Johnson"
+              companyWebsite="https://github.com/ImJimmi" companyEmail="jimyj@hotmail.com"
+              pluginDesc="Simple mono or stereo reverb." pluginManufacturerCode="Cont"
+              pluginVST3Category="Reverb" cppLanguageStandard="latest" pluginManufacturer="Contrast"
+              pluginCode="Verb" jucerFormatVersion="1">
   <MAINGROUP id="OHZnLw" name="Verb">
     <GROUP id="{F8B410DD-497E-2ED2-1465-7B4B04ACC73D}" name="Source">
       <GROUP id="{64E88F29-372C-1461-CA44-948CE5F40F28}" name="GUI">
@@ -24,7 +24,7 @@
     <VS2019 targetFolder="Builds/VisualStudio2019">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="0" name="Release" useRuntimeLibDLL="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
@@ -41,9 +41,32 @@
         <MODULEPATH id="juce_gui_basics" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../JUCE/modules"/>
-        <MODULEPATH id="contrast_shared_resources" path="../../Contrast"/>
+        <MODULEPATH id="contrast_shared_resources" path="..\..\Contrast"/>
       </MODULEPATHS>
     </VS2019>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.7 SDK"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_opengl"/>
+        <MODULEPATH id="juce_gui_extra"/>
+        <MODULEPATH id="juce_gui_basics"/>
+        <MODULEPATH id="juce_graphics"/>
+        <MODULEPATH id="juce_events"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_cryptography"/>
+        <MODULEPATH id="juce_core"/>
+        <MODULEPATH id="juce_audio_utils"/>
+        <MODULEPATH id="juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_plugin_client"/>
+        <MODULEPATH id="juce_audio_formats"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="contrast_shared_resources"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="contrast_shared_resources" showAllCode="1" useLocalCopy="0"
