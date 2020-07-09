@@ -19,7 +19,7 @@ jobs:
         targetType: 'inline'
         script: |
           $repo = "juce-framework/JUCE"
-          $filename = "*-osx.zip"
+          $filename = "*-windows.zip"
           $path = "$(Pipeline.Workspace)/JUCE"
           
           $releasesUri = "https://api.github.com/repos/$repo/releases/latest"
