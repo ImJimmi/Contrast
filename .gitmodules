@@ -1,3 +1,6 @@
 [submodule "Gate"]
 	path = Gate
 	url = https://github.com/ImJimmi/Gate.git
+[submodule "Press"]
+	path = Press
+	url = https://github.com/ImJimmi/Press.git
