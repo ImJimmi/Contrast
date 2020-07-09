@@ -43,14 +43,14 @@ jobs:
       inputs:
         script: |
           echo "Setting Projucer search paths..."
-          JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "%cd%\JUCE\modules"
+          $(Pipeline.Workspace)/JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "%cd%\JUCE\modules"
 
           echo "Deleting unneeded JUCE folders..."
           rd JUCE\extras /s /q
           rd JUCE\examples /s /q
 
           echo "Re-saving .jucer files..."
-          for /r %%v in (*.jucer) do JUCE/Projucer.exe --resave "%%v"
+          for /r %%v in (*.jucer) do $(Pipeline.Workspace)/JUCE/Projucer.exe --resave "%%v"
 
     - task: MSBuild@1
       displayName: "Task 3: Build x64"
