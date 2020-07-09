@@ -41,7 +41,7 @@
         <MODULEPATH id="juce_gui_basics" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../JUCE/modules"/>
-        <MODULEPATH id="contrast_shared_resources" path="..\..\Contrast"/>
+        <MODULEPATH id="contrast_shared_resources" path="../"/>
       </MODULEPATHS>
     </VS2019>
     <XCODE_MAC targetFolder="Builds/MacOSX">
@@ -64,7 +64,7 @@
         <MODULEPATH id="juce_audio_formats"/>
         <MODULEPATH id="juce_audio_devices"/>
         <MODULEPATH id="juce_audio_basics"/>
-        <MODULEPATH id="contrast_shared_resources"/>
+        <MODULEPATH id="contrast_shared_resources" path="../"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
