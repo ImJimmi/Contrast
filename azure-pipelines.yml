@@ -157,18 +157,14 @@ jobs:
       displayName: "Task 3: Xcode Build"
       inputs:
         script: |
+          mkdir $(Build.ArtifactStagingDirectory)/MacOS
           for pluginName in */ ; do
             echo "Building Xcode Project ${pluginName%/}..."
             xcodebuild -project "${pluginName}Builds/MacOSX/${pluginName%/}.xcodeproj" -target "${pluginName%/} - All" -configuration "Release"
 
-            mkdir $(Build.ArtifactStagingDirectory)/${pluginName}
-            mv /Users/runner/Library/Audio/Plug-Ins/Components/${pluginName%/}.component $(Build.ArtifactStagingDirectory)/${pluginName}
-            mv /Users/runner/Library/Audio/Plug-Ins/VST3/${pluginName%/}.vst3 $(Build.ArtifactStagingDirectory)/${pluginName}
-
-            ls $(Build.ArtifactStagingDirectory)/${pluginName}
+            mv /Users/runner/Library/Audio/Plug-Ins/Components/${pluginName%/}.component $(Build.ArtifactStagingDirectory)/MacOS
+            mv /Users/runner/Library/Audio/Plug-Ins/VST3/${pluginName%/}.vst3 $(Build.ArtifactStagingDirectory)/MacOS
           done
-
-          ls $(Build.ArtifactStagingDirectory)
 
     - task: PowerShell@2
       displayName: "Task 4: Compress Binaries"
