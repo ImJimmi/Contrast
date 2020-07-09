@@ -43,7 +43,7 @@ jobs:
       inputs:
         script: |
           echo "Setting Projucer search paths..."
-          $(Pipeline.Workspace)/JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "$(Pipeline.Workspace)/JUCE/modules"
+          $(Pipeline.Workspace)/JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "$(Pipeline.Workspace)\JUCE\modules"
 
           echo "Re-saving .jucer files..."
           for /r %%v in (*.jucer) do $(Pipeline.Workspace)/JUCE/Projucer.exe --resave "%%v"
