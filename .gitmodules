@@ -4,3 +4,6 @@
 [submodule "Press"]
 	path = Press
 	url = https://github.com/ImJimmi/Press.git
+[submodule "Verb"]
+	path = Verb
+	url = https://github.com/ImJimmi/Verb.git
