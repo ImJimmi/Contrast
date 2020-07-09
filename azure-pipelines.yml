@@ -1,0 +1,201 @@
+# Universal Windows Platform
+# Build a Universal Windows Platform project using Visual Studio.
+# Add steps that test and distribute an app, save build artifacts, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+jobs:
+  #=============================================================================
+  - job: Windows
+    pool:
+      vmImage: 'windows-latest'
+
+    steps:
+    - task: PowerShell@2
+      displayName: "Task 1: Download JUCE"
+      inputs:
+        targetType: 'inline'
+        script: |
+          $repo = "juce-framework/JUCE"
+          $filename = "*-osx.zip"
+          $path = "$(Pipeline.Workspace)/JUCE"
+          
+          $releasesUri = "https://api.github.com/repos/$repo/releases/latest"
+          $downloadUri = ((Invoke-RestMethod -Method GET -Uri $releasesUri).assets | Where-Object name -like $filename ).browser_download_url
+          
+          $pathZip = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath $(Split-Path -Path $downloadUri -Leaf)
+          
+          Invoke-WebRequest -Uri $downloadUri -Out $pathZip
+          
+          Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
+          
+          $tempExtract = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath $((New-Guid).Guid)
+          Expand-Archive -Path $pathZip -DestinationPath $tempExtract -Force
+          Move-Item -Path "$tempExtract\*" -Destination $path -Force
+          Remove-Item -Path $tempExtract -Force -Recurse -ErrorAction SilentlyContinue
+          
+          Remove-Item $pathZip -Force
+
+    - task: CmdLine@2
+      displayName: "Task 2: Re-save .jucer Files"
+      inputs:
+        script: |
+          echo "Moving Projucer.exe..."
+          move JUCE\extras\Projucer\Builds\VisualStudio2019\x64\Release\App\Projucer.exe .
+
+          echo "Setting Projucer search paths..."
+          Projucer.exe --set-global-search-path windows defaultJuceModulePath "%cd%\JUCE\modules"
+
+          echo "Deleting unneeded JUCE folders..."
+          rd JUCE\extras /s /q
+          rd JUCE\examples /s /q
+
+          echo "Re-saving .jucer files..."
+          for /r %%v in (*.jucer) do Projucer.exe --resave "%%v"
+
+    - task: MSBuild@1
+      displayName: "Task 3: Build x64"
+      inputs:
+        solution: '**\*.sln'
+        msbuildArchitecture: 'x64'
+        platform: 'x64'
+        configuration: 'Release64'
+
+    - task: MSBuild@1
+      displayName: "Task 4: Build Win32"
+      inputs:
+        solution: '**\*.sln'
+        platform: 'Win32'
+        configuration: 'ReleaseWin32'
+
+    - task: CmdLine@2
+      displayName: "Task 5: Move Binaries"
+      inputs:
+        script: |
+          mkdir $(Build.ArtifactStagingDirectory)\Windows
+          for /D %%d in (*) do call :MoveFile %%d
+          goto End
+
+          :MoveFile
+          set d=%1
+          for /r "%cd%\%d%" %%f in (*.vst3) do (
+            move %%f "$(Build.ArtifactStagingDirectory)\Windows"
+          )
+          goto :eof
+
+          :End
+
+    - task: PowerShell@2
+      displayName: "Task 6: Compress Binaries"
+      inputs:
+        targetType: 'inline'
+        script: |
+          Compress-Archive -Path $(Build.ArtifactStagingDirectory)\Windows\* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_Windows.zip
+
+    - task: GitHubRelease@1
+      displayName: "Task 7: Upload to GitHub"
+      inputs:
+        gitHubConnection: 'GitHub PAT'
+        repositoryName: 'ImJimmi/Contrast'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'gitTag'
+        releaseNotesSource: 'inline'
+        releaseNotesInline: 'Release'
+        assets: '$(Build.ArtifactStagingDirectory)\*.zip'
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
+
+    - bash: |
+        TAG=$(git describe --abbrev=0)
+        echo "##vso[task.setvariable variable=TAG;isOutput=true]$TAG"
+      name: setTagVar
+
+  #=============================================================================
+  - job: MacOS
+    dependsOn: Windows
+    variables:
+      TAG: $[ dependencies.Windows.outputs['setTagVar.TAG'] ]
+    pool:
+      vmImage: 'macOS-latest'
+
+    steps:
+    - task: PowerShell@2
+      displayName: "Task 1: Download JUCE"
+      inputs:
+        targetType: 'inline'
+        script: |
+          $repo = "juce-framework/JUCE"
+          $filename = "*-osx.zip"
+          $path = "$(Pipeline.Workspace)/JUCE"
+          
+          $releasesUri = "https://api.github.com/repos/$repo/releases/latest"
+          $downloadUri = ((Invoke-RestMethod -Method GET -Uri $releasesUri).assets | Where-Object name -like $filename ).browser_download_url
+          
+          $pathZip = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath $(Split-Path -Path $downloadUri -Leaf)
+          
+          Invoke-WebRequest -Uri $downloadUri -Out $pathZip
+          
+          Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
+          
+          $tempExtract = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath $((New-Guid).Guid)
+          Expand-Archive -Path $pathZip -DestinationPath $tempExtract -Force
+          Move-Item -Path "$tempExtract\*" -Destination $path -Force
+          Remove-Item -Path $tempExtract -Force -Recurse -ErrorAction SilentlyContinue
+          
+          Remove-Item $pathZip -Force
+
+    - task: CmdLine@2
+      displayName: "Task 2: Re-save .jucer Files"
+      inputs:
+        script: |
+          echo "Changing Projucer permissions..."
+          chmod +x $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer
+
+          echo "Setting Projucer search paths..."
+          $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "$(Pipeline.Workspace)/JUCE/modules"
+
+          echo "Re-saving .jucer files..."
+          for file in $(find $PWD -name '*.jucer'); do $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer --resave $file; done
+
+    - task: CmdLine@2
+      displayName: "Task 3: Xcode Build"
+      inputs:
+        script: |
+          for pluginName in */ ; do
+            echo "Building Xcode Project ${pluginName%/}..."
+            xcodebuild -project "${pluginName}Builds/MacOSX/${pluginName%/}.xcodeproj" -target "${pluginName%/} - All" -configuration "Release"
+
+            mkdir $(Build.ArtifactStagingDirectory)/${pluginName}
+            mv /Users/runner/Library/Audio/Plug-Ins/Components/${pluginName%/}.component $(Build.ArtifactStagingDirectory)/${pluginName}
+            mv /Users/runner/Library/Audio/Plug-Ins/VST3/${pluginName%/}.vst3 $(Build.ArtifactStagingDirectory)/${pluginName}
+
+            ls $(Build.ArtifactStagingDirectory)/${pluginName}
+          done
+
+          ls $(Build.ArtifactStagingDirectory)
+
+    - task: PowerShell@2
+      displayName: "Task 4: Compress Binaries"
+      inputs:
+        targetType: 'inline'
+        script: |
+          Compress-Archive -Path $(Build.ArtifactStagingDirectory)/MacOS/* -DestinationPath $(Build.ArtifactStagingDirectory)/Contrast_MacOS.zip
+
+    - task: GitHubRelease@1
+      displayName: "Task 5: Upload to GitHub"
+      inputs:
+        gitHubConnection: 'GitHub PAT'
+        repositoryName: 'ImJimmi/Contrast'
+        action: 'edit'
+        target: '$(Build.SourceVersion)'
+        tag: '$(TAG)'
+        tagSource: 'gitTag'
+        releaseNotesSource: 'inline'
+        releaseNotesInline: 'Release'
+        assets: '$(Build.ArtifactStagingDirectory)/*.zip'
+        assetUploadMode: 'replace'
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
