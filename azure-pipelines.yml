@@ -116,7 +116,7 @@ jobs:
 
     steps:
     - bash: |
-        GITHUB_OAUTH=##vso[task.getEndpointDataParameter('GitHub PAT', 'AccessToken', true)]
+        GITHUB_OAUTH=##vsts[taskLib.getEndpointDataParameter('GitHub PAT', 'AccessToken', true)]
         echo "##vso[task.setVariable variable=GITHUB_OAUTH]$GITHUB_OAUTH"
 
     - task: PowerShell@2
