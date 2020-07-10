@@ -121,6 +121,7 @@ jobs:
         script: |
           echo "Cloning JUCE..."
           git clone https://github.com/juce-framework/JUCE.git $(Pipeline.Workspace)/JUCE
+          ls $(Pipeline.Workspace)/JUCE
 
           xcodebuild -project "$(Pipeline.Workspace)/JUCE/extras/Projucer/Builds/MaxOSX/Projucer.xcodeproj" -target "Projucer - All" -configuration "Release"
 
