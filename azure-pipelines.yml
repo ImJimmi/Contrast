@@ -111,10 +111,14 @@ jobs:
     # dependsOn: Windows
     # variables:
     #   TAG: $[ dependencies.Windows.outputs['setTagVar.TAG'] ]
+    variables:
+      GITHUB_OAUTH: taskLib.getEndpointDataParameter('GitHub PAT', 'AccessToken', true)
     pool:
       vmImage: 'macOS-latest'
 
     steps:
+    - bash: echo $(GITHUB_OAUTH)
+
     - task: PowerShell@2
       displayName: "Task 1: Download JUCE"
       inputs:
