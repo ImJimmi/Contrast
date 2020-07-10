@@ -111,8 +111,6 @@ jobs:
     # dependsOn: Windows
     # variables:
     #   TAG: $[ dependencies.Windows.outputs['setTagVar.TAG'] ]
-    variables:
-      GITHUB_OAUTH: ##vso[taskLib.getEndpointDataParameter('GitHub PAT', 'AccessToken', true)]
     pool:
       vmImage: 'macOS-latest'
 
