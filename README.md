@@ -10,8 +10,24 @@ The plugins in this bundle are free for anyone to use and for anyone to edit. If
 - [Press](Press/) - Simple compressor.
 - [Verb](Verb/) - Simple mono or stereo reverb.
 
+## Download
+![GitHub All Releases](https://img.shields.io/github/downloads/ImJimmi/Contrast/total?label=Total%20Downloads)
+![GitHub Releases](https://img.shields.io/github/downloads/ImJimmi/Contrast/latest/total?label=Latest%20Version%20Downloads)
+
+[Download Latest Version](https://github.com/ImJimmi/Contrast/releases/latest)
+
 ## Requirements
-- [JUCE](https://github.com/juce-framework/JUCE)
+For running the pre-built plug-ins there are no other requirements besides a compatible host:
+#### Windows
+- VST3 compatible host
+- Windows 7 or later (recommended, earlier version may also work)
+#### MacOS
+- VST3 compatible host
+- AU compatible host
+- OSX 10.7 or later
+
+#### Requirements for development
+- Latest version of [JUCE](https://github.com/juce-framework/JUCE)
 
 ## How to use
 ### Building
