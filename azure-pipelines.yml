@@ -8,183 +8,171 @@ trigger:
 
 jobs:
   #=============================================================================
-  # - job: Windows
-  #   pool:
-  #     vmImage: 'windows-latest'
+  - job: Windows
+    pool:
+      vmImage: 'windows-latest'
 
-  #   steps:
-  #   - task: PowerShell@2
-  #     displayName: "Task 1: Download JUCE"
-  #     inputs:
-  #       targetType: 'inline'
-  #       script: |
-  #         $repo = "juce-framework/JUCE"
-  #         $filename = "*-windows.zip"
-  #         $path = "$(Pipeline.Workspace)/JUCE"
-          
-  #         $releasesUri = "https://api.github.com/repos/$repo/releases/latest"
-  #         $downloadUri = ((Invoke-RestMethod -Method GET -Uri $releasesUri).assets | Where-Object name -like $filename ).browser_download_url
-          
-  #         $pathZip = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath $(Split-Path -Path $downloadUri -Leaf)
-          
-  #         Invoke-WebRequest -Uri $downloadUri -Out $pathZip
-          
-  #         Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
-          
-  #         $tempExtract = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath $((New-Guid).Guid)
-  #         Expand-Archive -Path $pathZip -DestinationPath $tempExtract -Force
-  #         Move-Item -Path "$tempExtract\*" -Destination $path -Force
-  #         Remove-Item -Path $tempExtract -Force -Recurse -ErrorAction SilentlyContinue
-          
-  #         Remove-Item $pathZip -Force
+    steps:
+    - bash: |
+        TAG=$(git describe --abbrev=0)
+        echo "##vso[task.setvariable variable=version_tag;]$TAG"
+      name: setVersionTag
 
-  #   - task: CmdLine@2
-  #     displayName: "Task 2: Re-save .jucer Files"
-  #     inputs:
-  #       script: |
-  #         echo "Setting Projucer search paths..."
-  #         $(Pipeline.Workspace)/JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "$(Pipeline.Workspace)\JUCE\modules"
+    - task: CmdLine@2
+      displayName: "Task 1: Clone JUCE"
+      inputs:
+        script: |
+          echo "Cloning JUCE..."
+          git clone https://github.com/juce-framework/JUCE.git
 
-  #         echo "Re-saving .jucer files..."
-  #         for /r %%v in (*.jucer) do $(Pipeline.Workspace)/JUCE/Projucer.exe --resave "%%v"
+    - task: MSBuild@1
+      displayName: "Task 2: Build Projucer"
+      inputs:
+        solution: 'JUCE\extras\Projucer\Builds\VisualStudio2019\Projucer.sln'
+        msbuildArchitecture: 'x64'
+        platform: 'x64'
+        configuration: 'Release'
 
-  #   - task: MSBuild@1
-  #     displayName: "Task 3: Build x64"
-  #     inputs:
-  #       solution: '**\*.sln'
-  #       msbuildArchitecture: 'x64'
-  #       platform: 'x64'
-  #       configuration: 'Release64'
+    - task: CmdLine@2
+      displayName: "Task 3: Re-save .jucer Files"
+      inputs:
+        script: |
+          echo "Moving Projucer.exe..."
+          move JUCE\extras\Projucer\Builds\VisualStudio2019\x64\Release\App\Projucer.exe .
 
-  #   - task: MSBuild@1
-  #     displayName: "Task 4: Build Win32"
-  #     inputs:
-  #       solution: '**\*.sln'
-  #       platform: 'Win32'
-  #       configuration: 'ReleaseWin32'
+          echo "Setting Projucer search paths..."
+          Projucer.exe --set-global-search-path windows defaultJuceModulePath "%cd%\JUCE\modules"
 
-  #   - task: CmdLine@2
-  #     displayName: "Task 5: Move Binaries"
-  #     inputs:
-  #       script: |
-  #         mkdir $(Build.ArtifactStagingDirectory)\Windows
-  #         for /D %%d in (*) do call :MoveFile %%d
-  #         goto End
+          echo "Deleting unneeded JUCE folders..."
+          rd JUCE\extras /s /q
+          rd JUCE\examples /s /q
 
-  #         :MoveFile
-  #         set d=%1
-  #         for /r "%cd%\%d%" %%f in (*.vst3) do (
-  #           move %%f "$(Build.ArtifactStagingDirectory)\Windows"
-  #         )
-  #         goto :eof
+          echo "Re-saving .jucer files..."
+          for /r %%v in (*.jucer) do Projucer.exe --resave "%%v"
 
-  #         :End
+    - task: MSBuild@1
+      displayName: "Task 4: Build x64"
+      inputs:
+        solution: '**\*.sln'
+        msbuildArchitecture: 'x64'
+        platform: 'x64'
+        configuration: 'Release64'
 
-  #   - task: PowerShell@2
-  #     displayName: "Task 6: Compress Binaries"
-  #     inputs:
-  #       targetType: 'inline'
-  #       script: |
-  #         Compress-Archive -Path $(Build.ArtifactStagingDirectory)\Windows\* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_Windows.zip
+    - task: MSBuild@1
+      displayName: "Task 5: Build Win32"
+      inputs:
+        solution: '**\*.sln'
+        platform: 'Win32'
+        configuration: 'ReleaseWin32'
 
-  #   - task: GitHubRelease@1
-  #     displayName: "Task 7: Upload to GitHub"
-  #     inputs:
-  #       gitHubConnection: 'GitHub PAT'
-  #       repositoryName: 'ImJimmi/Contrast'
-  #       action: 'create'
-  #       target: '$(Build.SourceVersion)'
-  #       tagSource: 'gitTag'
-  #       releaseNotesSource: 'inline'
-  #       releaseNotesInline: 'Release'
-  #       assets: '$(Build.ArtifactStagingDirectory)\*.zip'
-  #       changeLogCompareToRelease: 'lastFullRelease'
-  #       changeLogType: 'commitBased'
+    - task: CmdLine@2
+      displayName: "Task 6: Move Binaries"
+      inputs:
+        script: |
+          mkdir $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows
 
-  #   - bash: |
-  #       TAG=$(git describe --abbrev=0)
-  #       echo "##vso[task.setvariable variable=TAG;isOutput=true]$TAG"
-  #     name: setTagVar
+          for /r %%f in (*.vst3) do (
+            echo "Moving file %%f..."
+            move %%f "$(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows"
+          )
+
+    - task: PowerShell@2
+      displayName: "Task 7: Compress Binaries"
+      inputs:
+        targetType: 'inline'
+        script: Compress-Archive -Path $(Build.ArtifactStagingDirectory)\* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows.zip
+
+    - task: GitHubRelease@1
+      displayName: "Task 8: Upload to GitHub"
+      inputs:
+        gitHubConnection: 'GitHub PAT'
+        repositoryName: 'ImJimmi/Contrast'
+        action: 'edit'
+        target: '$(Build.SourceVersion)'
+        tag: '$(version_tag)'
+        tagSource: 'gitTag'
+        releaseNotesSource: 'inline'
+        releaseNotesInline: 'Release'
+        assets: '$(Build.ArtifactStagingDirectory)\*.zip'
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
+        assetUploadMode: 'replace'
 
   #=============================================================================
   - job: MacOS
-    # dependsOn: Windows
-    # variables:
-    #   TAG: $[ dependencies.Windows.outputs['setTagVar.TAG'] ]
     pool:
       vmImage: 'macOS-latest'
 
     steps:
     - bash: |
-        GITHUB_OAUTH=##vsts[taskLib.getEndpointDataParameter('GitHub PAT', 'AccessToken', true)]
-        echo "##vso[task.setVariable variable=GITHUB_OAUTH]$GITHUB_OAUTH"
-
-    - task: PowerShell@2
-      displayName: "Task 1: Download JUCE"
-      inputs:
-        targetType: 'inline'
-        script: |
-          $repo = "juce-framework/JUCE"
-          $filename = "*-windows.zip"
-          $path = "$(Pipeline.Workspace)/JUCE"
-          
-          $releasesUri = "https://api.github.com/repos/$repo/releases/latest"
-          $downloadUri = ((Invoke-RestMethod -Method GET -Uri $releasesUri).assets | Where-Object name -like $filename ).browser_download_url
-          
-          $pathZip = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath $(Split-Path -Path $downloadUri -Leaf)
-          
-          Invoke-WebRequest -Uri $downloadUri -Out $pathZip
-          
-          Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
-          
-          $tempExtract = Join-Path -Path $([System.IO.Path]::GetTempPath()) -ChildPath $((New-Guid).Guid)
-          Expand-Archive -Path $pathZip -DestinationPath $tempExtract -Force
-          Move-Item -Path "$tempExtract\*" -Destination $path -Force
-          Remove-Item -Path $tempExtract -Force -Recurse -ErrorAction SilentlyContinue
-          
-          Remove-Item $pathZip -Force
+        TAG=$(git describe --abbrev=0)
+        echo "##vso[task.setvariable variable=version_tag;]$TAG"
+      name: setVersionTag
 
     - task: CmdLine@2
-      displayName: "Task 2: Re-save .jucer Files"
+      displayName: "Task 1: Clone JUCE"
       inputs:
         script: |
+          echo "Cloning JUCE..."
+          git clone https://github.com/juce-framework/JUCE.git $(Pipeline.Workspace)/JUCE
+
+    - task: Xcode@5
+      displayName: "Task 2: Build Projucer"
+      inputs:
+        actions: 'build'
+        configuration: 'Release'
+        sdk: 
+        xcWorkspacePath: '$(Pipeline.Workspace)/JUCE/extras/Projucer/Builds/MacOSX/Projucer.xcodeproj/project.xcworkspace'
+        packageApp: false
+
+    - task: CmdLine@2
+      displayName: "Task 3: Re-save .jucer Files"
+      inputs:
+        script: |
+          echo "Moving Projucer..."
+          mv $(Pipeline.Workspace)/JUCE/extras/Projucer/Builds/MacOSX/build/Release/Projucer.app $(Pipeline.Workspace)/JUCE/Projucer.app
+
           echo "Changing Projucer permissions..."
           chmod +x $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer
 
-          echo "Setting Projucer search paths..."
+          echo "Setting Projucer paths..."
           $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "$(Pipeline.Workspace)/JUCE/modules"
 
           echo "Re-saving .jucer files..."
           for file in $(find $PWD -name '*.jucer'); do $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer --resave $file; done
 
     - task: CmdLine@2
-      displayName: "Task 3: Xcode Build"
+      displayName: "Task 4: Xcode Build"
       inputs:
         script: |
-          mkdir $(Build.ArtifactStagingDirectory)/MacOS
-          for pluginName in */ ; do
-            echo "Building Xcode Project ${pluginName%/}..."
-            xcodebuild -project "${pluginName}Builds/MacOSX/${pluginName%/}.xcodeproj" -target "${pluginName%/} - All" -configuration "Release"
+          mkdir $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS
+          rm -r build
 
-            mv /Users/runner/Library/Audio/Plug-Ins/Components/${pluginName%/}.component $(Build.ArtifactStagingDirectory)/MacOS
-            mv /Users/runner/Library/Audio/Plug-Ins/VST3/${pluginName%/}.vst3 $(Build.ArtifactStagingDirectory)/MacOS
+          for pluginName in */ ; do
+            results=(`find "$(PWD)/${plugin}" -name '*.xcodeproj'`)
+            if [ ${#result[@]} -gt 0 ] then
+              echo "Building Xcode Project ${pluginName%/}..."
+              xcodebuild -project "${pluginName}Builds/MacOSX/${pluginName%/}.xcodeproj" -target "${pluginName%/} - All" -configuration "Release"
+
+              mv /Users/runner/Library/Audio/Plug-Ins/Components/${pluginName%/}.component $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS/${pluginName%/}.component
+              mv /Users/runner/Library/Audio/Plug-Ins/VST3/${pluginName%/}.vst3 $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS/${pluginName%/}.vst3
+            fi
           done
 
     - task: PowerShell@2
-      displayName: "Task 4: Compress Binaries"
+      displayName: "Task 5: Compress Binaries"
       inputs:
         targetType: 'inline'
-        script: |
-          Compress-Archive -Path $(Build.ArtifactStagingDirectory)/MacOS/* -DestinationPath $(Build.ArtifactStagingDirectory)/Contrast_MacOS.zip
+        script: Compress-Archive -Path $(Build.ArtifactStagingDirectory)/* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_MacOS.zip
 
     - task: GitHubRelease@1
-      displayName: "Task 5: Upload to GitHub"
+      displayName: "Task 6: Upload to GitHub"
       inputs:
         gitHubConnection: 'GitHub PAT'
         repositoryName: 'ImJimmi/Contrast'
         action: 'edit'
         target: '$(Build.SourceVersion)'
-        tag: '$(TAG)'
+        tag: '$(version_tag)'
         tagSource: 'gitTag'
         releaseNotesSource: 'inline'
         releaseNotesInline: 'Release'
