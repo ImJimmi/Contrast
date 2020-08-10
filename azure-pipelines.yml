@@ -86,17 +86,13 @@ jobs:
       displayName: "Task 8: Upload to GitHub"
       inputs:
         gitHubConnection: 'GitHub PAT'
-        repositoryName: 'ImJimmi/Contrast'
+        repositoryName: '$(Build.Repository.Name)'
         action: 'edit'
         target: '$(Build.SourceVersion)'
         tag: '$(version_tag)'
-        tagSource: 'gitTag'
-        releaseNotesSource: 'inline'
-        releaseNotesInline: 'Release'
         assets: '$(Build.ArtifactStagingDirectory)\*.zip'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
-        assetUploadMode: 'replace'
 
   #=============================================================================
   - job: MacOS
@@ -169,14 +165,10 @@ jobs:
       displayName: "Task 6: Upload to GitHub"
       inputs:
         gitHubConnection: 'GitHub PAT'
-        repositoryName: 'ImJimmi/Contrast'
+        repositoryName: '$(Build.Repository.Name)'
         action: 'edit'
         target: '$(Build.SourceVersion)'
         tag: '$(version_tag)'
-        tagSource: 'gitTag'
-        releaseNotesSource: 'inline'
-        releaseNotesInline: 'Release'
         assets: '$(Build.ArtifactStagingDirectory)/*.zip'
-        assetUploadMode: 'replace'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
