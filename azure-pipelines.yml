@@ -112,7 +112,7 @@ jobs:
           $headers = @{
             Authorization=("token {0}" -f $env:GitHubPAT)
           }
-          Write-Host $headers
+          Write-Host $headers.Authorization
           $json = Invoke-RestMethod -Uri https://api.github.com/repos/juce-framework/JUCE/releases/latest -Headers $headers
           
           ForEach ($asset in $json.assets) {
