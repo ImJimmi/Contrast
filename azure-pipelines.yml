@@ -23,7 +23,7 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          $json = curl.exe https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
+          $json = curl https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
           
           ForEach ($asset in $json.assets) {
               if ($asset.name -Match "-windows.zip") {
@@ -106,7 +106,7 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          $json = curl.exe https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
+          $json = curl https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
           
           ForEach ($asset in $json.assets) {
               if ($asset.name -Match "-osx.zip") {
