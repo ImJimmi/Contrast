@@ -117,6 +117,7 @@ jobs:
                   Expand-Archive "$(Pipeline.Workspace)/JUCE.zip" -DestinationPath "$(Pipeline.Workspace)"
               }
           }
+        failOnStderr: true
 
     - task: CmdLine@2
       displayName: "Task 2: Re-save .jucer Files"
