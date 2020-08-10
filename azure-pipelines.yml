@@ -109,7 +109,7 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          $json = curl https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
+          $json = Invoke-RestMethod -Uri https://api.github.com/repos/juce-framework/JUCE/releases/latest
           
           ForEach ($asset in $json.assets) {
               if ($asset.name -Match "-osx.zip") {
