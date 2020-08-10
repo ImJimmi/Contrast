@@ -109,10 +109,7 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          $headers = @{
-            'Authorization' = 'token ' + $env:GITHUBPAT
-          }
-          $json = Invoke-RestMethod -Uri https://api.github.com/repos/juce-framework/JUCE/releases/latest -Headers $headers
+          $json = Invoke-RestMethod -Uri https://api.github.com/repos/juce-framework/JUCE/releases/latest
           
           ForEach ($asset in $json.assets) {
               if ($asset.name -Match "-osx.zip") {
