@@ -8,90 +8,90 @@ trigger:
 
 jobs:
   #=============================================================================
-  # - job: Windows
-  #   pool:
-  #     vmImage: 'windows-latest'
+  - job: Windows
+    pool:
+      vmImage: 'windows-latest'
 
-  #   steps:
-  #   - bash: |
-  #       TAG=$(git describe --abbrev=0)
-  #       echo "##vso[task.setvariable variable=version_tag;]$TAG"
-  #     name: setVersionTag
+    steps:
+    - bash: |
+        TAG=$(git describe --abbrev=0)
+        echo "##vso[task.setvariable variable=version_tag;]$TAG"
+      name: setVersionTag
 
-  #   - task: PowerShell@2
-  #     displayName: "Task 1: Download Latest JUCE Release"
-  #     inputs:
-  #       targetType: 'inline'
-  #       script: |
-  #         $json = curl https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
+    - task: PowerShell@2
+      displayName: "Task 1: Download Latest JUCE Release"
+      inputs:
+        targetType: 'inline'
+        script: |
+          $json = curl https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
           
-  #         ForEach ($asset in $json.assets) {
-  #             if ($asset.name -Match "-windows.zip") {
-  #                 Write-Host "Invoking Web-Request: $asset.browser_download_url"
-  #                 Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$(Pipeline.Workspace)\JUCE.zip"
+          ForEach ($asset in $json.assets) {
+              if ($asset.name -Match "-windows.zip") {
+                  Write-Host "Invoking Web-Request: $asset.browser_download_url"
+                  Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$(Pipeline.Workspace)\JUCE.zip"
 
-  #                 Write-Host "Expanding Archive..."
-  #                 Expand-Archive "$(Pipeline.Workspace)\JUCE.zip" -DestinationPath "$(Pipeline.Workspace)"
-  #             }
-  #         }
+                  Write-Host "Expanding Archive..."
+                  Expand-Archive "$(Pipeline.Workspace)\JUCE.zip" -DestinationPath "$(Pipeline.Workspace)"
+              }
+          }
 
-  #   - task: CmdLine@2
-  #     displayName: "Task 2: Re-save .jucer Files"
-  #     inputs:
-  #       script: |
-  #         echo "Setting Projucer search paths..."
-  #         $(Pipeline.Workspace)\JUCE\Projucer.exe --set-global-search-path windows defaultJuceModulePath "$(Pipeline.Workspace)\JUCE\modules"
+    - task: CmdLine@2
+      displayName: "Task 2: Re-save .jucer Files"
+      inputs:
+        script: |
+          echo "Setting Projucer search paths..."
+          $(Pipeline.Workspace)\JUCE\Projucer.exe --set-global-search-path windows defaultJuceModulePath "$(Pipeline.Workspace)\JUCE\modules"
 
-  #         echo "Deleting unneeded JUCE folders..."
-  #         rd JUCE\extras /s /q
-  #         rd JUCE\examples /s /q
+          echo "Deleting unneeded JUCE folders..."
+          rd JUCE\extras /s /q
+          rd JUCE\examples /s /q
 
-  #         echo "Re-saving .jucer files..."
-  #         for /r %%v in (*.jucer) do $(Pipeline.Workspace)\JUCE\Projucer.exe --resave "%%v"
+          echo "Re-saving .jucer files..."
+          for /r %%v in (*.jucer) do $(Pipeline.Workspace)\JUCE\Projucer.exe --resave "%%v"
 
-  #   - task: MSBuild@1
-  #     displayName: "Task 3: Build x64"
-  #     inputs:
-  #       solution: '**\*.sln'
-  #       msbuildArchitecture: 'x64'
-  #       platform: 'x64'
-  #       configuration: 'Release64'
+    - task: MSBuild@1
+      displayName: "Task 3: Build x64"
+      inputs:
+        solution: '**\*.sln'
+        msbuildArchitecture: 'x64'
+        platform: 'x64'
+        configuration: 'Release64'
 
-  #   - task: MSBuild@1
-  #     displayName: "Task 4: Build Win32"
-  #     inputs:
-  #       solution: '**\*.sln'
-  #       platform: 'Win32'
-  #       configuration: 'ReleaseWin32'
+    - task: MSBuild@1
+      displayName: "Task 4: Build Win32"
+      inputs:
+        solution: '**\*.sln'
+        platform: 'Win32'
+        configuration: 'ReleaseWin32'
 
-  #   - task: CmdLine@2
-  #     displayName: "Task 5: Move Binaries"
-  #     inputs:
-  #       script: |
-  #         mkdir $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows
+    - task: CmdLine@2
+      displayName: "Task 5: Move Binaries"
+      inputs:
+        script: |
+          mkdir $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows
 
-  #         for /r %%f in (*.vst3) do (
-  #           echo "Moving file %%f..."
-  #           move %%f "$(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows"
-  #         )
+          for /r %%f in (*.vst3) do (
+            echo "Moving file %%f..."
+            move %%f "$(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows"
+          )
 
-  #   - task: PowerShell@2
-  #     displayName: "Task 6: Compress Binaries"
-  #     inputs:
-  #       targetType: 'inline'
-  #       script: Compress-Archive -Path $(Build.ArtifactStagingDirectory)\* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows.zip
+    - task: PowerShell@2
+      displayName: "Task 6: Compress Binaries"
+      inputs:
+        targetType: 'inline'
+        script: Compress-Archive -Path $(Build.ArtifactStagingDirectory)\* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows.zip
 
-  #   - task: GitHubRelease@1
-  #     displayName: "Task 7: Upload to GitHub"
-  #     inputs:
-  #       gitHubConnection: 'GitHub PAT'
-  #       repositoryName: '$(Build.Repository.Name)'
-  #       action: 'edit'
-  #       target: '$(Build.SourceVersion)'
-  #       tag: '$(version_tag)'
-  #       assets: '$(Build.ArtifactStagingDirectory)\*.zip'
-  #       changeLogCompareToRelease: 'lastFullRelease'
-  #       changeLogType: 'commitBased'
+    - task: GitHubRelease@1
+      displayName: "Task 7: Upload to GitHub"
+      inputs:
+        gitHubConnection: 'GitHub PAT'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'edit'
+        target: '$(Build.SourceVersion)'
+        tag: '$(version_tag)'
+        assets: '$(Build.ArtifactStagingDirectory)\*.zip'
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
 
   #=============================================================================
   - job: MacOS
