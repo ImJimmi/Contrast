@@ -27,7 +27,10 @@ jobs:
           
           ForEach ($asset in $json.assets) {
               if ($asset.name -Match "-windows.zip") {
+                  Write-Host "Invoking Web-Request: $asset.browser_download_url"
                   Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$(Pipeline.Workspace)\JUCE.zip"
+
+                  Write-Host "Expanding Archive..."
                   Expand-Archive "$(Pipeline.Workspace)\JUCE.zip" -DestinationPath "$(Pipeline.Workspace)"
               }
           }
