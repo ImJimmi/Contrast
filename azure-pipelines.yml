@@ -136,7 +136,7 @@ jobs:
 
           for pluginName in */ ; do
             results=(`find "$(Build.Repository.LocalPath)${plugin}" -name '*.xcodeproj'`)
-            echo results
+            echo ${results}
             if [ ${#result[@]} -gt 0 ]; then
               echo "Building Xcode Project ${pluginName%/}..."
               xcodebuild -project "${pluginName}Builds/MacOSX/${pluginName%/}.xcodeproj" -target "${pluginName%/} - All" -configuration "Release"
