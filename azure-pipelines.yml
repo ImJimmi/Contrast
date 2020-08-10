@@ -150,7 +150,7 @@ jobs:
 
           for pluginName in */ ; do
             results=(`find "$(PWD)/${plugin}" -name '*.xcodeproj'`)
-            if [ ${#result[@]} -gt 0 ] then
+            if [ ${#result[@]} -gt 0 ]; then
               echo "Building Xcode Project ${pluginName%/}..."
               xcodebuild -project "${pluginName}Builds/MacOSX/${pluginName%/}.xcodeproj" -target "${pluginName%/} - All" -configuration "Release"
 
