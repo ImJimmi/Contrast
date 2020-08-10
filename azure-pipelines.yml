@@ -90,6 +90,7 @@ jobs:
         target: '$(Build.SourceVersion)'
         tag: '$(version_tag)'
         assets: '$(Build.ArtifactStagingDirectory)\*.zip'
+        assetUploadMode: 'replace'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
 
@@ -167,5 +168,6 @@ jobs:
         target: '$(Build.SourceVersion)'
         tag: '$(version_tag)'
         assets: '$(Build.ArtifactStagingDirectory)/*.zip'
+        assetUploadMode: 'replace'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
