@@ -18,40 +18,36 @@ jobs:
         echo "##vso[task.setvariable variable=version_tag;]$TAG"
       name: setVersionTag
 
+    - task: PowerShell@2
+      displayName: "Task 1: Download Latest JUCE Release"
+      inputs:
+        targetType: 'inline'
+        script: |
+          $json = curl.exe https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
+          
+          ForEach ($asset in $json.assets) {
+              if ($asset.name -Match "-windows.zip") {
+                  Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$(Pipeline.Workspace)\JUCE.zip"
+                  Expand-Archive "$(Pipeline.Workspace)\JUCE.zip" -DestinationPath "$(Pipeline.Workspace)"
+              }
+          }
+
     - task: CmdLine@2
-      displayName: "Task 1: Clone JUCE"
+      displayName: "Task 2: Re-save .jucer Files"
       inputs:
         script: |
-          echo "Cloning JUCE..."
-          git clone https://github.com/juce-framework/JUCE.git
-
-    - task: MSBuild@1
-      displayName: "Task 2: Build Projucer"
-      inputs:
-        solution: 'JUCE\extras\Projucer\Builds\VisualStudio2019\Projucer.sln'
-        msbuildArchitecture: 'x64'
-        platform: 'x64'
-        configuration: 'Release'
-
-    - task: CmdLine@2
-      displayName: "Task 3: Re-save .jucer Files"
-      inputs:
-        script: |
-          echo "Moving Projucer.exe..."
-          move JUCE\extras\Projucer\Builds\VisualStudio2019\x64\Release\App\Projucer.exe .
-
           echo "Setting Projucer search paths..."
-          Projucer.exe --set-global-search-path windows defaultJuceModulePath "%cd%\JUCE\modules"
+          $(Pipeline.Workspace)\JUCE\Projucer.exe --set-global-search-path windows defaultJuceModulePath "$(Pipeline.Workspace)\JUCE\modules"
 
           echo "Deleting unneeded JUCE folders..."
           rd JUCE\extras /s /q
           rd JUCE\examples /s /q
 
           echo "Re-saving .jucer files..."
-          for /r %%v in (*.jucer) do Projucer.exe --resave "%%v"
+          for /r %%v in (*.jucer) do $(Pipeline.Workspace)\JUCE\Projucer.exe --resave "%%v"
 
     - task: MSBuild@1
-      displayName: "Task 4: Build x64"
+      displayName: "Task 3: Build x64"
       inputs:
         solution: '**\*.sln'
         msbuildArchitecture: 'x64'
@@ -59,14 +55,14 @@ jobs:
         configuration: 'Release64'
 
     - task: MSBuild@1
-      displayName: "Task 5: Build Win32"
+      displayName: "Task 4: Build Win32"
       inputs:
         solution: '**\*.sln'
         platform: 'Win32'
         configuration: 'ReleaseWin32'
 
     - task: CmdLine@2
-      displayName: "Task 6: Move Binaries"
+      displayName: "Task 5: Move Binaries"
       inputs:
         script: |
           mkdir $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows
@@ -77,13 +73,13 @@ jobs:
           )
 
     - task: PowerShell@2
-      displayName: "Task 7: Compress Binaries"
+      displayName: "Task 6: Compress Binaries"
       inputs:
         targetType: 'inline'
         script: Compress-Archive -Path $(Build.ArtifactStagingDirectory)\* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows.zip
 
     - task: GitHubRelease@1
-      displayName: "Task 8: Upload to GitHub"
+      displayName: "Task 7: Upload to GitHub"
       inputs:
         gitHubConnection: 'GitHub PAT'
         repositoryName: '$(Build.Repository.Name)'
@@ -105,29 +101,24 @@ jobs:
         echo "##vso[task.setvariable variable=version_tag;]$TAG"
       name: setVersionTag
 
-    - task: CmdLine@2
-      displayName: "Task 1: Clone JUCE"
+    - task: PowerShell@2
+      displayName: "Task 1: Download Latest JUCE Release"
       inputs:
+        targetType: 'inline'
         script: |
-          echo "Cloning JUCE..."
-          git clone https://github.com/juce-framework/JUCE.git $(Pipeline.Workspace)/JUCE
-
-    - task: Xcode@5
-      displayName: "Task 2: Build Projucer"
-      inputs:
-        actions: 'build'
-        configuration: 'Release'
-        sdk: 
-        xcWorkspacePath: '$(Pipeline.Workspace)/JUCE/extras/Projucer/Builds/MacOSX/Projucer.xcodeproj/project.xcworkspace'
-        packageApp: false
+          $json = curl.exe https://api.github.com/repos/juce-framework/JUCE/releases/latest | ConvertFrom-Json
+          
+          ForEach ($asset in $json.assets) {
+              if ($asset.name -Match "-osx.zip") {
+                  Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$(Pipeline.Workspace)/JUCE.zip"
+                  Expand-Archive "$(Pipeline.Workspace)/JUCE.zip" -DestinationPath "$(Pipeline.Workspace)"
+              }
+          }
 
     - task: CmdLine@2
-      displayName: "Task 3: Re-save .jucer Files"
+      displayName: "Task 2: Re-save .jucer Files"
       inputs:
         script: |
-          echo "Moving Projucer..."
-          mv $(Pipeline.Workspace)/JUCE/extras/Projucer/Builds/MacOSX/build/Release/Projucer.app $(Pipeline.Workspace)/JUCE/Projucer.app
-
           echo "Changing Projucer permissions..."
           chmod +x $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer
 
@@ -138,13 +129,14 @@ jobs:
           for file in $(find $PWD -name '*.jucer'); do $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer --resave $file; done
 
     - task: CmdLine@2
-      displayName: "Task 4: Xcode Build"
+      displayName: "Task 3: Xcode Build"
       inputs:
         script: |
           mkdir $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS
           rm -r build
 
           for pluginName in */ ; do
+            find "$(Build.Repository.LocalPath)/${plugin}" -name '*.xcodeproj'
             results=(`find "$(Build.Repository.LocalPath)/${plugin}" -name '*.xcodeproj'`)
             if [ ${#result[@]} -gt 0 ]; then
               echo "Building Xcode Project ${pluginName%/}..."
@@ -156,13 +148,13 @@ jobs:
           done
 
     - task: PowerShell@2
-      displayName: "Task 5: Compress Binaries"
+      displayName: "Task 4: Compress Binaries"
       inputs:
         targetType: 'inline'
         script: Compress-Archive -Path $(Build.ArtifactStagingDirectory)/* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_MacOS.zip
 
     - task: GitHubRelease@1
-      displayName: "Task 6: Upload to GitHub"
+      displayName: "Task 5: Upload to GitHub"
       inputs:
         gitHubConnection: 'GitHub PAT'
         repositoryName: '$(Build.Repository.Name)'
