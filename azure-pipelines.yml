@@ -110,8 +110,7 @@ jobs:
         targetType: 'inline'
         script: |
           $headers = @{
-            'username' = 'ImJimmi'
-            'token' = $(GitHubPAT)
+            'Authorization' = 'token ' + $env:GITHUBPAT
           }
           $json = Invoke-RestMethod -Uri https://api.github.com/repos/juce-framework/JUCE/releases/latest -Headers $headers
           
