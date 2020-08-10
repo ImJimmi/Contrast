@@ -7,9 +7,11 @@ A bundle of free, open-source audio plugins built with [JUCE](https://juce.com/)
 The plugins in this bundle are free for anyone to use and for anyone to edit. If you would like to contribute to this project you can make a [pull request](https://github.com/ImJimmi/Contrast/pulls), or raise an [issue](https://github.com/ImJimmi/Contrast/issues) to report a bug.
 
 ## PLUGINS
-- [Gate](Gate/) - Look-ahead noise gate with attack and release.
-- [Press](Press/) - Simple compressor.
-- [Verb](Verb/) - Simple mono or stereo reverb.
+| PLUGIN | DESCRIPTION |
+| ------ | ----------- |
+| [Gate](Gate/) | Look-ahead noise gate with attack and release. |
+| [Press](Press/) | Simple compressor. |
+| [Verb](Verb/) | Simple mono or stereo reverb. |
 
 ## DOWNLOAD
 ![GitHub All Releases](https://img.shields.io/github/downloads/ImJimmi/Contrast/total?label=Total%20Downloads)
