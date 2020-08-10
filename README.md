@@ -1,4 +1,6 @@
 # Contrast
+[![Build Status](https://dev.azure.com/ImJimmi/Contrast/_apis/build/status/ImJimmi.Contrast?branchName=azure_pipelines)](https://dev.azure.com/ImJimmi/Contrast/_build/latest?definitionId=3&branchName=azure_pipelines)
+
 A bundle of free, open-source audio plugins built with [JUCE](https://juce.com/).
 
 The plugins in this bundle are free for anyone to use and for anyone to edit. If you would like to contribute to this project you can make a [pull request](https://github.com/ImJimmi/Contrast/pulls), or raise an [issue](https://github.com/ImJimmi/Contrast/issues) to report a bug.
