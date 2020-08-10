@@ -110,9 +110,10 @@ jobs:
         targetType: 'inline'
         script: |
           $headers = @{
-            Authorization=("token {0}" -f $env:GitHubPAT)
+            Authorization=("token {0}" -f $env:GITHUBPAT)
           }
           Write-Host $headers.Authorization
+          Write-Host $env:GITHUBPAT
           $json = Invoke-RestMethod -Uri https://api.github.com/repos/juce-framework/JUCE/releases/latest -Headers $headers
           
           ForEach ($asset in $json.assets) {
