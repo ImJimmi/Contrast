@@ -138,7 +138,7 @@ jobs:
           mkdir $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS
 
           for pluginName in */ ; do
-            results=(`find "$(Build.Repository.LocalPath)${pluginName}" -name '*.xcodeproj'`)
+            results=(`find "$(Build.Repository.LocalPath)/${pluginName}" -name '*.xcodeproj'`)
             if [ ${#result[@]} -gt 0 ]; then
               echo "Building Xcode Project ${pluginName%/}..."
               xcodebuild -project "${pluginName}Builds/MacOSX/${pluginName%/}.xcodeproj" -target "${pluginName%/} - All" -configuration "Release"
