@@ -9,9 +9,9 @@ The plugins in this bundle are free for anyone to use and for anyone to edit. If
 ## PLUGINS
 | PLUGIN | DESCRIPTION |
 | ------ | ----------- |
-| [Gate](Gate/) | Look-ahead noise gate with attack and release. |
-| [Press](Press/) | Simple compressor. |
-| [Verb](Verb/) | Simple mono or stereo reverb. |
+| [GATE](Gate/) | Look-ahead noise gate with attack and release. |
+| [PRESS](Press/) | Simple compressor. |
+| [VERB](Verb/) | Simple mono or stereo reverb. |
 
 ## DOWNLOAD
 ![GitHub All Releases](https://img.shields.io/github/downloads/ImJimmi/Contrast/total?label=Total%20Downloads)
