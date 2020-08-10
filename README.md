@@ -12,6 +12,8 @@ The plugins in this bundle are free for anyone to use and for anyone to edit. If
 
 ## Download
 ![GitHub All Releases](https://img.shields.io/github/downloads/ImJimmi/Contrast/total?label=Total%20Downloads)
+
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/ImJimmi/Contrast?label=Latest%20Version)
 ![GitHub Releases](https://img.shields.io/github/downloads/ImJimmi/Contrast/latest/total?label=Latest%20Version%20Downloads)
 
 [Download Latest Version](https://github.com/ImJimmi/Contrast/releases/latest)
