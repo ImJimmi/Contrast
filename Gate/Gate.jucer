@@ -4,7 +4,7 @@
               companyWebsite="https://github.com/ImJimmi" companyEmail="jimyj@hotmail.com"
               pluginDesc="Look-ahead noise gate with attack and release." pluginManufacturerCode="Cont"
               pluginVST3Category="Dynamics" cppLanguageStandard="latest" pluginManufacturer="Contrast"
-              pluginCode="Gate" jucerFormatVersion="1">
+              pluginCode="Gate" jucerFormatVersion="1" version="1.0.0">
   <MAINGROUP id="OHZnLw" name="Gate">
     <GROUP id="{F8B410DD-497E-2ED2-1465-7B4B04ACC73D}" name="Source">
       <GROUP id="{64E88F29-372C-1461-CA44-948CE5F40F28}" name="GUI">
