@@ -7,15 +7,42 @@ namespace contrast
     using namespace juce;
 
     //==================================================================================================================
+    /** Returns the largest whole number below the given value.
+
+        By default this function returns an int but as it is a template
+        function, it can be made to return any other type by using the first
+        type in the template list.
+        For example, contrast::floor<float>(4.7) will return 4.f.
+    */
+    template <typename ReturnType = int, typename InputType>
+    inline ReturnType floor(InputType value)
+    {
+        return static_cast<ReturnType>(std::floor(value));
+    }
+
+    /** Returns the nearest whole number to the given value.
+
+        By default this function returns an int but as it is a template
+        function, it can be made to return any other type by using the first
+        type in the template list.
+        For example, contrast::round<float>(4.7) will return 5.f.
+    */
+    template <typename ReturnType = int, typename InputType>
+    inline ReturnType round(InputType value)
+    {
+        return static_cast<ReturnType>(juce::round(value));
+    }
+
+    //==================================================================================================================
     /** Returns a String that can be used to display the given value.
     
         This will round the number to the given number of significant figures
         (where 0 counts as a significant figure) and returns the value as a
         String.
     */
-    inline String pretifyValue(float value, int numSignificantFigures)
+    String pretifyValue(float value, int numSignificantFigures)
     {
-        const auto numDigitsBeforePoint = value == 0.f ? 1 : jmax(1, static_cast<int>(std::floor(std::log10(std::abs(value))) + 1));
+        const auto numDigitsBeforePoint = value == 0.f ? 1 : jmax(1, floor(std::log10(std::abs(value)) + 1));
 
         // If the number of digits before the decimal point (i.e. for 203.1,
         // it would be 3) is greater than the required number of significant
@@ -24,7 +51,7 @@ namespace contrast
         if (numDigitsBeforePoint > numSignificantFigures)
         {
             const auto difference = numDigitsBeforePoint - numSignificantFigures;
-            return String(static_cast<int>(std::round(value * std::pow(10.f, -difference))) * std::pow(10.f, difference));
+            return String(round(value * std::pow(10.f, -difference)) * std::pow(10.f, difference));
         }
 
         // Otherwise, if the number of digits before the decimal point is less
@@ -35,14 +62,14 @@ namespace contrast
         const auto numDecimalPlaces = numSignificantFigures - numDigitsBeforePoint;
 
         if (numDecimalPlaces == 0)
-            return String(static_cast<int>(std::round(value)));
+            return String(round(value));
 
         return String(value, numDecimalPlaces);
     }
 
     //==================================================================================================================
     /** Interpolates between some values using a Lagrange technique. */
-    inline float interpolate(const float* const x, const float* const y, int N, float proportion)
+    float interpolate(const float* const x, const float* const y, int N, float proportion)
     {
         auto result = 0.f;
 

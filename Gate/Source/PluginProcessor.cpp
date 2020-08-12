@@ -205,7 +205,7 @@ void PluginProcessor::parameterChanged(const String& parameterID, float newValue
     {
         // Recalculate the latency value which is the number of samples in the
         // attack time
-        latency = (int)std::round(attack * getSampleRate() * 0.001f);
+        latency = contrast::round(attack * getSampleRate() * 0.001f);
 
         // Resize the delay lines to match the latency
         for (auto& delayLine : delayLines)
