@@ -30,7 +30,7 @@ namespace contrast
     template <typename ReturnType = int, typename InputType>
     inline ReturnType round(InputType value)
     {
-        return static_cast<ReturnType>(juce::round(value));
+        return static_cast<ReturnType>(juce::roundToInt(value));
     }
 
     //==================================================================================================================
@@ -40,7 +40,7 @@ namespace contrast
         (where 0 counts as a significant figure) and returns the value as a
         String.
     */
-    String pretifyValue(float value, int numSignificantFigures)
+    inline String pretifyValue(float value, int numSignificantFigures)
     {
         const auto numDigitsBeforePoint = value == 0.f ? 1 : jmax(1, floor(std::log10(std::abs(value)) + 1));
 
@@ -69,7 +69,7 @@ namespace contrast
 
     //==================================================================================================================
     /** Interpolates between some values using a Lagrange technique. */
-    float interpolate(const float* const x, const float* const y, int N, float proportion)
+    inline float interpolate(const float* const x, const float* const y, int N, float proportion)
     {
         auto result = 0.f;
 
