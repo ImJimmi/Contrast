@@ -4,6 +4,11 @@
 namespace contrast
 {
     //==================================================================================================================
+    /** Changes the pitch of an audio signal.
+
+        This implementation is shamelessly stolen from The STK:
+        https://github.com/thestk/stk/blob/master/include/PitShift.h
+    */
     class PitchShifter
     {
     public:
@@ -85,7 +90,7 @@ namespace contrast
         */
         void setShift(int semitones, float cents)
         {
-            setShift(std::pow(twelthRoot2, semitones + cents / 100.f));
+            setShift(std::pow(std::pow(2.f, 1.f / 12.f), semitones + cents / 100.f));
         }
 
         /** Returns the current length of the delay being applied by this
@@ -122,10 +127,5 @@ namespace contrast
         int halfLength = 0;
         float wetMix = 1.f;
         float dryMix = 0.f;
-
-        static const float twelthRoot2;
     };
-
-    //==================================================================================================================
-    inline const float PitchShifter::twelthRoot2 = std::pow(2.f, 1.f / 12.f);
 }   // namespace contrast
