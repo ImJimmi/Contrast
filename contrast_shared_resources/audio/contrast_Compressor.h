@@ -24,14 +24,14 @@ namespace contrast
             // Interpolate the output if it is within the knee limits
             if (knee > 0.f && envelopeDB > (threshold - knee / 2.f) && envelopeDB < (threshold + knee / 2.f))
             {
-                float x[] = { threshold - knee / 2.f, jmin(0.f, threshold + knee / 2.f) };
+                float x[] = { threshold - knee / 2.f, juce::jmin(0.f, threshold + knee / 2.f) };
                 float y[] = { 0.f, slope };
 
                 slope = interpolate(x, y, 2, envelopeDB);
             }
 
             // Calculate the gain in decibels.
-            auto decibels = jmin(0.f, slope * (threshold - envelopeDB));
+            auto decibels = juce::jmin(0.f, slope * (threshold - envelopeDB));
 
             // Convert the decibels to gain and return the result.
             return juce::Decibels::decibelsToGain(decibels);
@@ -39,7 +39,7 @@ namespace contrast
         
         float processSample(float input)
         {
-            auto envelopeDB = Decibels::gainToDecibels(follower.processSample(input));
+            auto envelopeDB = juce::Decibels::gainToDecibels(follower.processSample(input));
 
             // If the new envelope value is below the lower limit of the knee,
             // we can just return the input because we don't need to apply gain.
@@ -74,7 +74,7 @@ namespace contrast
 
         void setMakeupGain(float newMakeupDB)
         {
-            makeupGain = Decibels::decibelsToGain(newMakeupDB);
+            makeupGain = juce::Decibels::decibelsToGain(newMakeupDB);
         }
 
         void setAttack(float newAttackTimeMS)

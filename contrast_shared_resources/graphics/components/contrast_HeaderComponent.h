@@ -4,15 +4,13 @@
 namespace contrast
 {
     //==================================================================================================================
-    using namespace juce;
-
-    //==================================================================================================================
     /** This Component should be displayed at the top of all Contrast plugins.
         It displays the plugins's name, a list of available presets, and a
         button to toggle between the two contrast modes (white on black or black
         on white).
     */
-    class HeaderComponent   :   public Component
+    class HeaderComponent   :   public juce::Component,
+                                private contrast::LookAndFeel::PrimaryColourListener
     {
     public:
         //==============================================================================================================
@@ -20,8 +18,11 @@ namespace contrast
             be given here. The index of the initial preset to display is also
             required.
         */
-        HeaderComponent(const StringArray& presetNames, int initialPresetIndex, contrast::LookAndFeel& laf)
-            :   contrastLaF(laf)
+        HeaderComponent(const juce::StringArray& presetNames, int initialPresetIndex, contrast::LookAndFeel& laf)
+            :   contrastLaF(laf),
+                previousPresetButton("Previous", juce::DrawableButton::ImageFitted),
+                nextPresetButton(    "Next",     juce::DrawableButton::ImageFitted),
+                contrastButton(      "Contrast", juce::DrawableButton::ImageFitted)
         {
             // Add the previous preset button as a child and set its onClick
             // method to decrement the presetBox's index.
@@ -40,15 +41,15 @@ namespace contrast
             // items and initialise its selected index, and finally set its
             // onChange method to call the onPresetIndexChanged member function.
             addAndMakeVisible(presetsBox);
-            presetsBox.setJustificationType(Justification::centred);
-            presetsBox.getProperties().set("showArrow", false);
-            presetsBox.getProperties().set("invertColours", true);
-            presetsBox.getProperties().set("showOutline", false);
+            presetsBox.setJustificationType(juce::Justification::centred);
+            presetsBox.getProperties().set(LookAndFeel::Options::SHOW_ARROW,     false);
+            presetsBox.getProperties().set(LookAndFeel::Options::INVERT_COLOURS, true);
+            presetsBox.getProperties().set(LookAndFeel::Options::SHOW_OUTLINE,   false);
             presetsBox.addItemList(presetNames, 1);
-            presetsBox.setSelectedId(initialPresetIndex + 1, dontSendNotification);
+            presetsBox.setSelectedId(initialPresetIndex + 1, juce::dontSendNotification);
             presetsBox.onChange = [this]() {
                 if (onPresetIndexChanged)
-                    onPresetIndexChanged(presetsBox.getSelectedId() - 1);
+                    onPresetIndexChanged(presetsBox.getText());
             };
 
             // Add the next preset button as a child and set its onClick method
@@ -68,16 +69,26 @@ namespace contrast
             // Add the contrast button as a child and set its onClick method
             // to instruct the custom LookAndFeel to change theme.
             addAndMakeVisible(contrastButton);
+            contrastButton.setClickingTogglesState(true);
+            contrastButton.setColour(juce::DrawableButton::backgroundColourId,   {});
+            contrastButton.setColour(juce::DrawableButton::backgroundOnColourId, {});
             contrastButton.onClick = [this]() {
                 contrastButtonClicked();
 
                 if (onContrastChanged)
                     onContrastChanged();
             };
+
+            contrastLaF.addPrimaryColourListener(this);
+        }
+
+        ~HeaderComponent() override
+        {
+            contrastLaF.removePrimaryColourListener(this);
         }
 
         //==============================================================================================================
-        void paint(Graphics& g) override
+        void paint(juce::Graphics& g) override
         {
             // Have the custom LookAndFeel draw the header's background and the
             // plugin name.
@@ -93,17 +104,29 @@ namespace contrast
             bounds.removeFromLeft(contrastLaF.getHeaderPluginNameWidth(*this));
             bounds.reduce(5, 5);
 
-            previousPresetButton.setBounds(bounds.removeFromLeft(bounds.getHeight()));
-            nextPresetButton.setBounds(bounds.removeFromRight(bounds.getHeight()));
+            previousPresetButton.setBounds(bounds.removeFromLeft (bounds.getHeight()));
+            nextPresetButton    .setBounds(bounds.removeFromRight(bounds.getHeight()));
 
             presetsBox.setBounds(bounds);
 
             // Make sure to update the widgets so they're displayed properly.
             // These can't be initialised in the constructor because the custom
             // LookAndFeel won't have been set yet.
-            updateContrastButtonImage();
             updateColours();
-            updateArrowImages();
+        }
+
+        void visibilityChanged() override
+        {
+            updateContrastButtonDrawables();
+            updateArrowDrawables();
+        }
+
+        //==============================================================================================================
+        /** Returns the standard/recommended height for this Component. */
+        template <typename T>
+        static constexpr T getStandardHeight()
+        {
+            return static_cast<T>(35);
         }
 
         //==============================================================================================================
@@ -113,48 +136,47 @@ namespace contrast
         std::function<void(void)> onContrastChanged = nullptr;
 
         // Called when a new preset is selected from the ComboBox.
-        std::function<void(int index)> onPresetIndexChanged = nullptr;
+        std::function<void(const juce::String&)> onPresetIndexChanged = nullptr;
 
     private:
         //==============================================================================================================
-        /** Updates the image used for the contrast button. */
-        void updateContrastButtonImage()
+        void primaryColourChanged() override
         {
-            auto img = contrastLaF.createContrastButtonImage(contrastButton.getWidth(), contrastButton.getHeight());
-            contrastButton.setImages(false, false, true, img, 1.f, {}, img, 1.f, {}, img, 1.f, {});
+            contrastButton.setToggleState(contrastLaF.isUsingWhiteAsPrimaryColour(), juce::sendNotification);
         }
 
-        /** Updates the images used for the previous and next preset buttons. */
-        void updateArrowImages()
+        //==============================================================================================================
+        /** Creates the drawables used by the contrast button. */
+        void updateContrastButtonDrawables()
         {
-            auto bounds = previousPresetButton.getLocalBounds().toFloat().withSizeKeepingCentre(11.f, 9.f);
-
-            Path arrow;
-            arrow.startNewSubPath(bounds.getBottomLeft());
-            arrow.lineTo(bounds.getCentreX(), bounds.getY());
-            arrow.lineTo(bounds.getBottomRight());
-            arrow.closeSubPath();
-
+            if (contrastButton.getToggleState())
             {
-                Image img(Image::ARGB, previousPresetButton.getWidth(), previousPresetButton.getHeight(), true);
-                Graphics g(img);
-
-                g.setColour(presetsBox.findColour(ComboBox::textColourId));
-                g.fillPath(arrow, AffineTransform::rotation(-MathConstants<float>::pi / 2.f,
-                    bounds.getCentreX(), bounds.getCentreY()));
-
-                previousPresetButton.setImages(false, false, true, img, 1.f, {}, img, 1.f, {}, img, 1.f, {});
+                if (auto drawable = juce::Drawable::createFromSVG(*juce::parseXML(Icons::contrastIconBlack)))
+                    contrastButton.setImages(drawable.get());
             }
-
+            else
             {
-                Image img(Image::ARGB, nextPresetButton.getWidth(), nextPresetButton.getHeight(), true);
-                Graphics g(img);
+                if (auto drawable = juce::Drawable::createFromSVG(*juce::parseXML(Icons::contrastIconWhite)))
+                    contrastButton.setImages(drawable.get());
+            }
+        }
 
-                g.setColour(presetsBox.findColour(ComboBox::textColourId));
-                g.fillPath(arrow, AffineTransform::rotation(MathConstants<float>::pi / 2.f,
-                                                            bounds.getCentreX(), bounds.getCentreY()));
-
-                nextPresetButton.setImages(false, false, true, img, 1.f, {}, img, 1.f, {}, img, 1.f, {});
+        /** Creates the drawables used by the arrow buttons. */
+        void updateArrowDrawables()
+        {
+            if (contrastButton.getToggleState())
+            {
+                if (auto drawable = juce::Drawable::createFromSVG(*juce::parseXML(Icons::nextIconBlack)))
+                    nextPresetButton.setImages(drawable.get());
+                if (auto drawable = juce::Drawable::createFromSVG(*juce::parseXML(Icons::prevIconBlack)))
+                    previousPresetButton.setImages(drawable.get());
+            }
+            else
+            {
+                if (auto drawable = juce::Drawable::createFromSVG(*juce::parseXML(Icons::nextIconWhite)))
+                    nextPresetButton.setImages(drawable.get());
+                if (auto drawable = juce::Drawable::createFromSVG(*juce::parseXML(Icons::prevIconWhite)))
+                    previousPresetButton.setImages(drawable.get());
             }
         }
 
@@ -164,8 +186,8 @@ namespace contrast
             const auto primary = contrastLaF.findColour(contrast::LookAndFeel::primaryColourId);
             const auto secondary = contrastLaF.findColour(contrast::LookAndFeel::secondaryColourId);
 
-            presetsBox.setColour(ComboBox::backgroundColourId,  primary);
-            presetsBox.setColour(ComboBox::textColourId,        secondary);
+            presetsBox.setColour(juce::ComboBox::backgroundColourId, primary);
+            presetsBox.setColour(juce::ComboBox::textColourId,       secondary);
         }
 
         /** Called when the contrast button is clicked and instructs the custom
@@ -173,11 +195,11 @@ namespace contrast
         */
         void contrastButtonClicked()
         {
-            contrastLaF.setUseWhiteAsPrimaryColour(!contrastLaF.isUsingWhiteAsPrimaryColour());
+            contrastLaF.setUseWhiteAsPrimaryColour(contrastButton.getToggleState());
 
-            updateContrastButtonImage();
+            updateContrastButtonDrawables();
+            updateArrowDrawables();
             updateColours();
-            updateArrowImages();
             getTopLevelComponent()->repaint();
         }
 
@@ -185,16 +207,16 @@ namespace contrast
         contrast::LookAndFeel& contrastLaF;
 
         // Changes to the previous preset in the list.
-        ImageButton previousPresetButton;
+        juce::DrawableButton previousPresetButton;
 
         // Displays a list of available presets for the plugin.
-        ComboBox presetsBox;
+        juce::ComboBox presetsBox;
 
         // Changes to the next preset in the list.
-        ImageButton nextPresetButton;
+        juce::DrawableButton nextPresetButton;
 
         // Used to toggle between the black on white, and white on black themes.
-        ImageButton contrastButton;
+        juce::DrawableButton contrastButton;
 
         //==============================================================================================================
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HeaderComponent)

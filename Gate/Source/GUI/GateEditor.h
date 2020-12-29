@@ -1,23 +1,24 @@
 #pragma once
 
-#include "JuceHeader.h"
-#include "PluginProcessor.h"
+#include <JuceHeader.h>
+
+#include "../Audio/GateProcessor.h"
 
 //======================================================================================================================
-class PluginEditor  :   public AudioProcessorEditor
+class GateEditor    :   public juce::AudioProcessorEditor
 {
 public:
     //==================================================================================================================
-    PluginEditor(PluginProcessor&);
-    ~PluginEditor();
+    GateEditor(GateProcessor&);
+    ~GateEditor();
 
     //==================================================================================================================
-    void paint(Graphics&) override;
+    void paint(juce::Graphics&) override;
     void resized() override;
 
 private:
     //==================================================================================================================
-    PluginProcessor& processor;
+    GateProcessor& processor;
 
     // The custom LookAndFeel class we'll be using for this plugin.
     contrast::LookAndFeel contrastLaF;
@@ -25,21 +26,15 @@ private:
     // The header component, displayed across the top of the UI.
     contrast::HeaderComponent header;
 
-    Slider sizeSlider;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> sizeAttachment;
+    juce::Slider thresholdSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> thresholdAttachment;
 
-    Slider dampingSlider;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> dampingAttachment;
+    juce::Slider attackSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
 
-    Slider wetSlider;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> wetAttachment;
-
-    Slider drySlider;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> dryAttachment;
-
-    Slider widthSlider;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> widthAttachment;
+    juce::Slider releaseSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
 
     //==================================================================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GateEditor)
 };

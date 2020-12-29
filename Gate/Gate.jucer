@@ -4,19 +4,18 @@
               companyWebsite="https://github.com/ImJimmi" companyEmail="jimyj@hotmail.com"
               pluginDesc="Look-ahead noise gate with attack and release." pluginManufacturerCode="Cont"
               pluginVST3Category="Dynamics" cppLanguageStandard="latest" pluginManufacturer="Contrast"
-              pluginCode="Gate" jucerFormatVersion="1" version="1.0.0">
+              pluginCode="Gate" jucerFormatVersion="1" version="1.0.0" addUsingNamespaceToJuceHeader="0">
   <MAINGROUP id="OHZnLw" name="Gate">
     <GROUP id="{F8B410DD-497E-2ED2-1465-7B4B04ACC73D}" name="Source">
+      <FILE id="qKWVWQ" name="Gate.h" compile="0" resource="0" file="Source/Gate.h"/>
       <GROUP id="{64E88F29-372C-1461-CA44-948CE5F40F28}" name="GUI">
-        <FILE id="hmd8HG" name="PluginEditor.cpp" compile="1" resource="0"
-              file="Source/PluginEditor.cpp"/>
-        <FILE id="BIa3Ev" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+        <FILE id="SHNbhX" name="GateEditor.cpp" compile="1" resource="0" file="Source/GUI/GateEditor.cpp"/>
+        <FILE id="K9CIIo" name="GateEditor.h" compile="0" resource="0" file="Source/GUI/GateEditor.h"/>
       </GROUP>
       <GROUP id="{040B1660-C30D-B7DA-7095-F0A18DA111F4}" name="Audio">
-        <FILE id="FTaUbp" name="PluginProcessor.cpp" compile="1" resource="0"
-              file="Source/PluginProcessor.cpp"/>
-        <FILE id="oPq2Ip" name="PluginProcessor.h" compile="0" resource="0"
-              file="Source/PluginProcessor.h"/>
+        <FILE id="BlPDn2" name="GateProcessor.cpp" compile="1" resource="0"
+              file="Source/Audio/GateProcessor.cpp"/>
+        <FILE id="ShRsVv" name="GateProcessor.h" compile="0" resource="0" file="Source/Audio/GateProcessor.h"/>
       </GROUP>
     </GROUP>
   </MAINGROUP>

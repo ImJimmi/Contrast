@@ -4,9 +4,6 @@
 namespace contrast
 {
     //==================================================================================================================
-    using namespace juce;
-
-    //==================================================================================================================
     /** Returns the largest whole number below the given value.
 
         By default this function returns an int but as it is a template
@@ -18,6 +15,12 @@ namespace contrast
     inline ReturnType floor(InputType value)
     {
         return static_cast<ReturnType>(std::floor(value));
+    }
+
+    template <typename ReturnType = int, typename InputType>
+    inline ReturnType ceil(InputType value)
+    {
+        return static_cast<ReturnType>(std::ceil(value));
     }
 
     /** Returns the nearest whole number to the given value.
@@ -40,9 +43,10 @@ namespace contrast
         (where 0 counts as a significant figure) and returns the value as a
         String.
     */
-    inline String pretifyValue(float value, int numSignificantFigures)
+    template <typename ValueType>
+    inline juce::String pretifyValue(ValueType value, juce::uint32 numSignificantFigures)
     {
-        const auto numDigitsBeforePoint = value == 0.f ? 1 : jmax(1, floor(std::log10(std::abs(value)) + 1));
+        const auto numDigitsBeforePoint = value == static_cast<ValueType>(0) ? 1U : juce::jmax(1U, floor<juce::uint32>(std::log10(std::abs(value)) + 1U));
 
         // If the number of digits before the decimal point (i.e. for 203.1,
         // it would be 3) is greater than the required number of significant
@@ -50,8 +54,8 @@ namespace contrast
         // (For example 203.1 with 2 sigfigs is 200).
         if (numDigitsBeforePoint > numSignificantFigures)
         {
-            const auto difference = numDigitsBeforePoint - numSignificantFigures;
-            return String(round(value * std::pow(10.f, -difference)) * std::pow(10.f, difference));
+            const auto difference = static_cast<ValueType>(numDigitsBeforePoint - numSignificantFigures);
+            return juce::String(round(value * std::pow(static_cast<ValueType>(10), -difference)) * std::pow(static_cast<ValueType>(10), difference));
         }
 
         // Otherwise, if the number of digits before the decimal point is less
@@ -61,23 +65,25 @@ namespace contrast
         // is "201.0" (not "201", or "201.03").
         const auto numDecimalPlaces = numSignificantFigures - numDigitsBeforePoint;
 
-        if (numDecimalPlaces == 0)
-            return String(round(value));
+        if (numDecimalPlaces == 0U)
+            return juce::String(round(value));
 
-        return String(value, numDecimalPlaces);
+        return juce::String(value, numDecimalPlaces);
     }
 
     //==================================================================================================================
     /** Interpolates between some values using a Lagrange technique. */
-    inline float interpolate(const float* const x, const float* const y, int N, float proportion)
+    template <typename ReturnType>
+    inline ReturnType interpolate(const ReturnType* const x, const ReturnType* const y,
+                                  juce::uint32 N, ReturnType proportion)
     {
-        auto result = 0.f;
+        auto result = static_cast<ReturnType>(0);
 
-        for (int i = 0; i < N; i++)
+        for (auto i = 0U; i < N; i++)
         {
-            auto l = 1.f;
+            auto l = static_cast<ReturnType>(1);
 
-            for (int j = 0; j < N; j++)
+            for (auto j = 0U; j < N; j++)
             {
                 if (j != i)
                     l *= (proportion - x[j]) / (x[i] - x[j]);
@@ -87,5 +93,45 @@ namespace contrast
         }
 
         return result;
+    }
+
+    //==================================================================================================================
+    /** Initialises the given slider by adding it as a child to the given
+        parent, setting some of its properties and finally attaching it to the
+        given SliderAttachment object using the parameter ID provided.
+    */
+    inline void initialiseSlider(juce::Component& parentComponent, juce::AudioProcessorValueTreeState& apvts,
+                                 juce::Slider& slider,
+                                 std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>& attachment,
+                                 const juce::String& sliderName, const juce::String& correspondingParameterID)
+    {
+        // Add the slider to the parent and make it visible.
+        parentComponent.addAndMakeVisible(slider);
+
+        // Set the slider's name which is used by our custom LookAndFeel class to
+        // draw a label above the slider.
+        slider.setName(sliderName);
+
+        // Make the slider rotary and have it use a rotary drag.
+        slider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+
+        // Set the textbox size.
+        // The width will be clamped to the slider's width so by setting it to 999
+        // we can ensure it'll just be the same width of the slider.
+        slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 999, 25);
+
+        // Initialise the attachment object.
+        attachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+            apvts,
+            correspondingParameterID,
+            slider
+        ));
+    }
+
+    //==================================================================================================================
+    template <typename ReturnType>
+    inline ReturnType getRecommendedSliderHeightForWidth(juce::Slider& slider, ReturnType width)
+    {
+        return width + static_cast<ReturnType>(slider.getTextBoxHeight() * 2);
     }
 }   // namespace contrast
