@@ -245,7 +245,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout GateProcessor::createParamet
     // we live in.
     std::vector<std::unique_ptr<juce::AudioProcessorParameterGroup>> groups;
     groups.push_back(std::make_unique<juce::AudioProcessorParameterGroup>(
-        "", "", "",
+        "gate", "Gate", "",
         std::move(thresholdParam),
         std::move(attackParam),
         std::move(releaseParam)
