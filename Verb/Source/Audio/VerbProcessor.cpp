@@ -184,7 +184,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout VerbProcessor::createParamet
     // will live in.
     std::vector<std::unique_ptr<juce::AudioProcessorParameterGroup>> groups;
     groups.push_back(std::make_unique<juce::AudioProcessorParameterGroup>(
-        "", "", "",
+        "verb", "Verb", "",
         std::move(sizeParam), std::move(dampingParam), std::move(wetParam),
         std::move(dryParam), std::move(widthParam)
     ));

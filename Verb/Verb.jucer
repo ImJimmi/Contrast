@@ -4,7 +4,8 @@
               companyWebsite="https://github.com/ImJimmi" companyEmail="jimyj@hotmail.com"
               pluginDesc="Simple mono or stereo reverb." pluginManufacturerCode="Cont"
               pluginVST3Category="Reverb" cppLanguageStandard="latest" pluginManufacturer="Contrast"
-              pluginCode="Verb" jucerFormatVersion="1" version="1.0.1" addUsingNamespaceToJuceHeader="0">
+              pluginCode="Verb" jucerFormatVersion="1" version="1.0.1" addUsingNamespaceToJuceHeader="0"
+              displaySplashScreen="1">
   <MAINGROUP id="OHZnLw" name="Verb">
     <GROUP id="{F8B410DD-497E-2ED2-1465-7B4B04ACC73D}" name="Source">
       <FILE id="wGILKe" name="Verb.h" compile="0" resource="0" file="Source/Verb.h"/>
@@ -91,6 +92,7 @@
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>
+    <OSX/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"
                JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING="1"/>
