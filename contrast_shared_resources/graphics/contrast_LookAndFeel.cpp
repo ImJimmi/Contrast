@@ -4,8 +4,17 @@
 namespace contrast
 {
     //==================================================================================================================
+    juce::Font getArialBlack()
+    {
+#if JUCE_WINDOWS
+        return juce::Font{"Arial", 18.f, 0}.withTypefaceStyle("Black");
+#elif JUCE_MAC
+        return juce::Font{"Arial Black", 18.f, 0};
+#endif
+    }
+
     LookAndFeel::LookAndFeel()
-        :   font(juce::Font("Arial", 18.f, 0).withTypefaceStyle("Black"))
+        :   font(getArialBlack())
     {
         updateColours();
     }
