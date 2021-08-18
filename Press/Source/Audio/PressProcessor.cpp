@@ -200,7 +200,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParame
     // we live in.
     std::vector<std::unique_ptr<juce::AudioProcessorParameterGroup>> groups;
     groups.push_back(std::make_unique<juce::AudioProcessorParameterGroup>(
-        "", "", "",
+        "press", "Press", "",
         std::move(thresholdParam), std::move(ratioParam), std::move(kneeParam),
         std::move(attackParam), std::move(releaseParam), std::move(gainParam)
     ));
