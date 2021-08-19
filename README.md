@@ -10,6 +10,7 @@ The plugins in this bundle are free for anyone to use and for anyone to edit. If
 | PLUGIN | DESCRIPTION |
 | ------ | ----------- |
 | [GATE](Gate/) | Look-ahead noise gate with attack and release. |
+| [PITCH](Pitch/) | Pitch shifter. |
 | [PRESS](Press/) | Simple compressor. |
 | [VERB](Verb/) | Simple mono or stereo reverb. |
 
