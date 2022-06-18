@@ -5,11 +5,11 @@
 //======================================================================================================================
 GateEditor::GateEditor(GateProcessor& p)
     :   AudioProcessorEditor(&p),
-        processor(p),
-        header(p.getPresetNames(), processor.getAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX, 0), contrastLaF)
+        gateProcessor(p),
+        header(p.getPresetNames(), gateProcessor.getAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX, 0), contrastLaF)
 {
     // Initialise our custom LookAndFeel by setting the current colour theme.
-    contrastLaF.setUseWhiteAsPrimaryColour(processor.getAdditionalProperty(
+    contrastLaF.setUseWhiteAsPrimaryColour(gateProcessor.getAdditionalProperty(
         contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR,
         contrastLaF.isUsingWhiteAsPrimaryColour()
     ));
@@ -18,21 +18,21 @@ GateEditor::GateEditor(GateProcessor& p)
     // can handle events that happen in the header.
     addAndMakeVisible(header);
     header.onPresetIndexChanged = [this](const juce::String& presetName) {
-        processor.setCurrentPreset(presetName);
+        gateProcessor.setCurrentPreset(presetName);
     };
     header.onContrastChanged = [this]() {
-        processor.setAdditionalProperty(
+        gateProcessor.setAdditionalProperty(
             contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR,
             contrastLaF.isUsingWhiteAsPrimaryColour()
         );
     };
 
     // Initialise the sliders.
-    contrast::initialiseSlider(*this, processor.getAPVTS(), thresholdSlider, thresholdAttachment,
+    contrast::initialiseSlider(*this, gateProcessor.getAPVTS(), thresholdSlider, thresholdAttachment,
                                "Threshold", Gate::ParameterIDs::THRESHOLD);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), attackSlider,    attackAttachment,
+    contrast::initialiseSlider(*this, gateProcessor.getAPVTS(), attackSlider,    attackAttachment,
                                "Attack",    Gate::ParameterIDs::ATTACK);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), releaseSlider,   releaseAttachment,
+    contrast::initialiseSlider(*this, gateProcessor.getAPVTS(), releaseSlider,   releaseAttachment,
                                "Release",   Gate::ParameterIDs::RELEASE);
 
     // Set the size of our UI.

@@ -68,7 +68,7 @@ namespace contrast
         if (numDecimalPlaces == 0U)
             return juce::String(round(value));
 
-        return juce::String(value, numDecimalPlaces);
+        return juce::String(value, static_cast<int> (numDecimalPlaces));
     }
 
     //==================================================================================================================

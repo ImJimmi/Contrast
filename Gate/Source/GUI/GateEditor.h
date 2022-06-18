@@ -10,7 +10,7 @@ class GateEditor    :   public juce::AudioProcessorEditor
 public:
     //==================================================================================================================
     GateEditor(GateProcessor&);
-    ~GateEditor();
+    ~GateEditor() final;
 
     //==================================================================================================================
     void paint(juce::Graphics&) override;
@@ -18,7 +18,7 @@ public:
 
 private:
     //==================================================================================================================
-    GateProcessor& processor;
+    GateProcessor& gateProcessor;
 
     // The custom LookAndFeel class we'll be using for this plugin.
     contrast::LookAndFeel contrastLaF;

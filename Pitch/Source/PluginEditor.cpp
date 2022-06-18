@@ -3,35 +3,35 @@
 //======================================================================================================================
 PluginEditor::PluginEditor(PluginProcessor& p)
     :   AudioProcessorEditor(&p),
-        processor(p),
-        header(p.getPresetNames(), processor.getAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX, 0), contrastLaF)
+        pitchProcessor(p),
+        header(p.getPresetNames(), pitchProcessor.getAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX, 0), contrastLaF)
 {
     // Tell this Component to use the custom LookAndFeel. All child Components
     // will also use it since this it our top-level component. Also need to
     // initialise the LookAndFeel with the correct colour scheme to use (white
     // on black, or black on white).
     setLookAndFeel(&contrastLaF);
-    contrastLaF.setUseWhiteAsPrimaryColour(processor.getAdditionalProperty("useWhiteAsPrimaryColour",
-                                                                           contrastLaF.isUsingWhiteAsPrimaryColour()));
+    contrastLaF.setUseWhiteAsPrimaryColour(pitchProcessor.getAdditionalProperty("useWhiteAsPrimaryColour",
+                                                                                contrastLaF.isUsingWhiteAsPrimaryColour()));
 
     // Add the HeaderComponent as a child. Set its std::function members so we
     // can handle events that happen in the header.
     addAndMakeVisible(header);
     header.onPresetIndexChanged = [this](const juce::String& presetName) {
-        processor.setCurrentPreset(presetName);
+        pitchProcessor.setCurrentPreset(presetName);
     };
     header.onContrastChanged = [this]() {
-        processor.setAdditionalProperty(
+        pitchProcessor.setAdditionalProperty(
             contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR,
             contrastLaF.isUsingWhiteAsPrimaryColour()
         );
     };
 
-    contrast::initialiseSlider(*this, processor.getAPVTS(), semitonesSlider, semitonesAttachment,
+    contrast::initialiseSlider(*this, pitchProcessor.getAPVTS(), semitonesSlider, semitonesAttachment,
                                "Semitones", "semitones");
-    contrast::initialiseSlider(*this, processor.getAPVTS(), centsSlider, centsAttachment,
+    contrast::initialiseSlider(*this, pitchProcessor.getAPVTS(), centsSlider, centsAttachment,
                                "Cents", "cents");
-    contrast::initialiseSlider(*this, processor.getAPVTS(), mixSlider, mixAttachment,
+    contrast::initialiseSlider(*this, pitchProcessor.getAPVTS(), mixSlider, mixAttachment,
                                "Mix", "mix");
 
     // Set the size of the UI.

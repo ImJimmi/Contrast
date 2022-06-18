@@ -9,7 +9,7 @@ class VerbEditor    :   public juce::AudioProcessorEditor
 public:
     //==================================================================================================================
     VerbEditor(VerbProcessor&);
-    ~VerbEditor();
+    ~VerbEditor() final;
 
     //==================================================================================================================
     void paint(juce::Graphics&) override;
@@ -17,7 +17,7 @@ public:
 
 private:
     //==================================================================================================================
-    VerbProcessor& processor;
+    VerbProcessor& verbProcessor;
 
     // The custom LookAndFeel class we'll be using for this plugin.
     contrast::LookAndFeel contrastLaF;

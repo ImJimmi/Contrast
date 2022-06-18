@@ -35,7 +35,7 @@ namespace contrast
 
         //==============================================================================================================
         /** Sets the current length of the delay line. */
-        void setLength(int newLength)
+        void setLength(std::size_t newLength)
         {
             jassert(newLength <= capacity && newLength >= 0);
             length = newLength;
@@ -91,10 +91,10 @@ namespace contrast
         std::vector<ValueType> delayLine;
 
         // The current write index.
-        int writeIndex{ 0 };
+        std::size_t writeIndex{ 0 };
 
         // The current length of the delay line.
-        std::atomic<int> length;
-        static_assert(std::atomic<int>::is_always_lock_free);
+        std::atomic<std::size_t> length;
+        static_assert(std::atomic<std::size_t>::is_always_lock_free);
     };
 }   // namespace contrast

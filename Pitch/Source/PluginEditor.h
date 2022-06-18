@@ -9,7 +9,7 @@ class PluginEditor  :   public AudioProcessorEditor
 public:
     //==================================================================================================================
     PluginEditor(PluginProcessor&);
-    ~PluginEditor();
+    ~PluginEditor() final;
 
     //==================================================================================================================
     void paint(Graphics&) override;
@@ -17,7 +17,7 @@ public:
 
 private:
     //==================================================================================================================
-    PluginProcessor& processor;
+    PluginProcessor& pitchProcessor;
 
     // The custom LookAndFeel class we'll be using for this plugin.
     contrast::LookAndFeel contrastLaF;

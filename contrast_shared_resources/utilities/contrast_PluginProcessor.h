@@ -38,7 +38,7 @@ namespace contrast
             setAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX,                0);
         }
 
-        virtual ~PluginProcessor() = default;
+        virtual ~PluginProcessor() override = default;
 
         //==============================================================================================================
         /** Returns true if the given channel configuration is supported by
@@ -52,6 +52,7 @@ namespace contrast
         virtual bool isBusesLayoutSupported(const BusesLayout& layouts) const override
         {
 #if JUCE_DEBUG
+            juce::ignoreUnused(layouts);
             return true;
 #else
             return layouts.inputBuses.size() == layouts.outputBuses.size();

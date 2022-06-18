@@ -9,7 +9,7 @@ class PressEditor   :   public juce::AudioProcessorEditor
 public:
     //==================================================================================================================
     PressEditor(PressProcessor&);
-    ~PressEditor();
+    ~PressEditor() final;
 
     //==================================================================================================================
     void paint(juce::Graphics&) override;
@@ -17,7 +17,7 @@ public:
 
 private:
     //==================================================================================================================
-    PressProcessor& processor;
+    PressProcessor& pressProcessor;
 
     // The custom LookAndFeel class we'll be using for this plugin.
     contrast::LookAndFeel contrastLaF;

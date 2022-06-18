@@ -66,13 +66,13 @@ namespace contrast
         {
             bounds.reduce(defaultThickness<int> * 2, defaultThickness<int> * 2);
 
-            auto font = getLabelFont(label);
-            g.setFont(getLabelFont(label));
+            auto labelFont = getLabelFont(label);
+            g.setFont(labelFont);
 
-            if (font.getStringWidth(label.getText()) > label.getWidth())
+            if (labelFont.getStringWidth(label.getText()) > label.getWidth())
             {
-                g.drawMultiLineText(label.getText(), bounds.getX(), bounds.getY() + static_cast<int>(font.getAscent()) - font.getHeight() * 0.15f,
-                    bounds.getWidth(), label.getJustificationType(), -font.getHeight() * 0.1f);
+                g.drawMultiLineText(label.getText(), bounds.getX(), bounds.getY() + static_cast<int>(labelFont.getAscent() - labelFont.getHeight() * 0.15f),
+                                    bounds.getWidth(), label.getJustificationType(), -labelFont.getHeight() * 0.1f);
             }
             else
             {
@@ -172,7 +172,7 @@ namespace contrast
         g.fillRect(bounds);
 
         g.setColour(findColour(primaryColourId));
-        g.drawRect(bounds, defaultThickness<float>);
+        g.drawRect(bounds.toFloat(), defaultThickness<float>);
     }
 
     void LookAndFeel::drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& bounds,
@@ -180,7 +180,7 @@ namespace contrast
                                         bool hasSubMenu,
                                         const juce::String& text, const juce::String& shortcutKeyText,
                                         const juce::Drawable* icon,
-                                        const juce::Colour* const textColourToUse)
+                                        const juce::Colour* const /*textColourToUse*/)
     {
         if (isSeparator)
         {

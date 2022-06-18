@@ -32,6 +32,13 @@ PRIVATE
     cxx_std_20
 )
 
+target_compile_options(Verb
+PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+)
+
+
 target_link_libraries(Verb
 PRIVATE
     contrast_shared_resources

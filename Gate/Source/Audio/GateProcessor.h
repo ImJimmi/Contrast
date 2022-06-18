@@ -11,7 +11,7 @@ class GateProcessor :   public contrast::PluginProcessor,
 public:
     //==================================================================================================================
     GateProcessor();
-    ~GateProcessor();
+    ~GateProcessor() final;
 
     //==================================================================================================================
     void prepareToPlay(double, int) override;
@@ -80,7 +80,7 @@ private:
     // The amount of latency, in samples, that our plugin is introducing to the
     // signal. In the processBlock method we'll need to give this value to the
     // host.
-    std::atomic<int> latency = 0;
+    std::atomic<std::size_t> latency = 0;
 
     // The gate states help us keep track of which state each of the gates are
     // in. When the gates are in the process of opening, we don't want them to

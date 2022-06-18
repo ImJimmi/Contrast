@@ -19,7 +19,7 @@ VerbProcessor::~VerbProcessor()
 }
 
 //======================================================================================================================
-void VerbProcessor::prepareToPlay(double sampleRate, int blockSize)
+void VerbProcessor::prepareToPlay(double sampleRate, int /* blockSize */)
 {
     reverb.setSampleRate(sampleRate);
     reverb.reset();
@@ -112,10 +112,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout VerbProcessor::createParamet
         0.5f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value * 100.f, 3) + "%";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue() / 100.f;
         }
     );
@@ -127,10 +127,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout VerbProcessor::createParamet
         0.5f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value * 100.f, 3) + "%";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue() / 100.f;
         }
     );
@@ -142,10 +142,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout VerbProcessor::createParamet
         0.33f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value * 100.f, 3) + "%";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue() / 100.f;
         }
     );
@@ -157,10 +157,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout VerbProcessor::createParamet
         0.4f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value * 100.f, 3) + "%";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue() / 100.f;
         }
     );
@@ -172,10 +172,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout VerbProcessor::createParamet
         0.75f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value * 100.f, 3) + "%";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue() / 100.f;
         }
     );

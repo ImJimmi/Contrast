@@ -8,7 +8,7 @@ class PressProcessor    :   public contrast::PluginProcessor
 public:
     //==================================================================================================================
     PressProcessor();
-    ~PressProcessor();
+    ~PressProcessor() final;
 
     //==================================================================================================================
     void prepareToPlay(double, int) override;
