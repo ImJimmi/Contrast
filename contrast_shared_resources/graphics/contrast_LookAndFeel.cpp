@@ -109,7 +109,7 @@ namespace contrast
             g.setFont(font.withHeight(juce::jmin(static_cast<float>(slider.getTextBoxHeight()), font.getHeight())));
             g.drawText(
                 slider.getName().toUpperCase(),
-                bounds.removeFromTop(slider.getTextBoxHeight()).toNearestInt().translated(0, -2),
+                bounds.removeFromTop(static_cast<float>(slider.getTextBoxHeight())).toNearestInt().translated(0, -2),
                 juce::Justification::centredTop
             );
         }

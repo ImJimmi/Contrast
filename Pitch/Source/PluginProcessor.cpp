@@ -21,7 +21,7 @@ PluginProcessor::~PluginProcessor()
 }
 
 //======================================================================================================================
-void PluginProcessor::prepareToPlay(double sampleRate, int blockSize)
+void PluginProcessor::prepareToPlay(double sampleRate, int newBlockSize)
 {
     // Make sure the vectors have been resized to fit the current number of
     // channels.
@@ -30,14 +30,14 @@ void PluginProcessor::prepareToPlay(double sampleRate, int blockSize)
     // Initialise the compressors
     for (auto& pitShift : pitShifters)
     {
-        pitShift.reset(new contrast::PitchShifter(5024, sampleRate, static_cast<uint32>(blockSize)));
+        pitShift.reset(new contrast::PitchShifter(5024, sampleRate, static_cast<uint32>(newBlockSize)));
         pitShift->setShift(2.f);
         jassert(pitShift);
     }
 
     // Make sure the compressors are initialised with the current parameters
     // by faking some parameter changed calls.
-    parameterChanged("semitones",   semitones);
+    parameterChanged("semitones",   static_cast<float>(semitones.get()));
     parameterChanged("cents",       cents);
 }
 
