@@ -11,7 +11,7 @@ class PluginProcessor   :   public contrast::PluginProcessor,
 public:
     //==================================================================================================================
     PluginProcessor();
-    ~PluginProcessor();
+    ~PluginProcessor() final;
 
     //==================================================================================================================
     void prepareToPlay(double, int) override;

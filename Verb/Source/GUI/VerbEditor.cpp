@@ -5,8 +5,8 @@
 //======================================================================================================================
 VerbEditor::VerbEditor(VerbProcessor& p)
     :   AudioProcessorEditor(&p),
-        processor(p),
-        header(p.getPresetNames(), processor.getAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX, 0), contrastLaF)
+        verbProcessor(p),
+        header(p.getPresetNames(), verbProcessor.getAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX, 0), contrastLaF)
 {
     // Tell this Component to use the custom LookAndFeel. All child Components
     // will also use it since this it our top-level component. Also need to
@@ -14,7 +14,7 @@ VerbEditor::VerbEditor(VerbProcessor& p)
     // on black, or black on white).
     setLookAndFeel(&contrastLaF);
     contrastLaF.setUseWhiteAsPrimaryColour(
-        processor.getAdditionalProperty(contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR,
+        verbProcessor.getAdditionalProperty(contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR,
                                         contrastLaF.isUsingWhiteAsPrimaryColour())
     );
 
@@ -22,22 +22,22 @@ VerbEditor::VerbEditor(VerbProcessor& p)
     // can handle events that happen in the header.
     addAndMakeVisible(header);
     header.onPresetIndexChanged = [this](const juce::String& presetName) {
-        processor.setCurrentPreset(presetName);
+        verbProcessor.setCurrentPreset(presetName);
     };
     header.onContrastChanged = [this]() {
-        processor.setAdditionalProperty(contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR, contrastLaF.isUsingWhiteAsPrimaryColour());
+        verbProcessor.setAdditionalProperty(contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR, contrastLaF.isUsingWhiteAsPrimaryColour());
     };
 
     // Initialise sliders.
-    contrast::initialiseSlider(*this, processor.getAPVTS(), sizeSlider,    sizeAttachment,
+    contrast::initialiseSlider(*this, verbProcessor.getAPVTS(), sizeSlider,    sizeAttachment,
                                "Size",    Verb::ParameterIDs::SIZE);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), dampingSlider, dampingAttachment,
+    contrast::initialiseSlider(*this, verbProcessor.getAPVTS(), dampingSlider, dampingAttachment,
                                "Damping", Verb::ParameterIDs::DAMPING);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), wetSlider,     wetAttachment,
+    contrast::initialiseSlider(*this, verbProcessor.getAPVTS(), wetSlider,     wetAttachment,
                                "Wet",     Verb::ParameterIDs::WET);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), drySlider,     dryAttachment,
+    contrast::initialiseSlider(*this, verbProcessor.getAPVTS(), drySlider,     dryAttachment,
                                "Dry",     Verb::ParameterIDs::DRY);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), widthSlider,   widthAttachment,
+    contrast::initialiseSlider(*this, verbProcessor.getAPVTS(), widthSlider,   widthAttachment,
                                "Width",   Verb::ParameterIDs::WIDTH);
 
     // Set the size of the UI.
@@ -80,7 +80,7 @@ void VerbEditor::resized()
     const auto gap = 20.f;
     grid.setGap(Px(gap));
 
-    auto heightForWidth = [this](juce::Slider& slider, float width) -> float {
+    auto heightForWidth = [](juce::Slider& slider, float width) -> float {
         return width + slider.getTextBoxHeight() * 2.f;
     };
 

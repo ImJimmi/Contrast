@@ -8,7 +8,7 @@ class VerbProcessor   :   public contrast::PluginProcessor
 public:
     //==================================================================================================================
     VerbProcessor();
-    ~VerbProcessor();
+    ~VerbProcessor() final;
 
     //==================================================================================================================
     void prepareToPlay(double, int) override;

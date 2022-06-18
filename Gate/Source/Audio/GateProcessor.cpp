@@ -21,7 +21,7 @@ GateProcessor::~GateProcessor()
 }
 
 //======================================================================================================================
-void GateProcessor::prepareToPlay(double sampleRate, int blockSize)
+void GateProcessor::prepareToPlay(double sampleRate, int /* blockSize */)
 {
     // Make sure the vectors have been resized to fit the current number of
     // channels.
@@ -80,7 +80,8 @@ void GateProcessor::numChannelsChanged()
     // Since we specified to only allow configurations with the same number of
     // input and output channels, we can use either the input or the output bus
     // to find the total number of available audio channels.
-    const auto numChannels = juce::jmax(getTotalNumInputChannels(), getTotalNumOutputChannels());
+    const auto numChannels = static_cast<std::size_t> (juce::jmax(getTotalNumInputChannels(),
+                                                                  getTotalNumOutputChannels()));
 
     currentPeakFollowers  .resize(numChannels);
     delayedPeakFollowers  .resize(numChannels);
@@ -161,7 +162,7 @@ void GateProcessor::presetChoiceChanged(int presetIndex)
 }
 
 //======================================================================================================================
-void GateProcessor::parameterChanged(const juce::String& parameterID, float newValue)
+void GateProcessor::parameterChanged(const juce::String& parameterID, float /* newValue */)
 {
     // Update the delay lines when the attack parameter changes.
     if (parameterID == Gate::ParameterIDs::ATTACK)
@@ -178,7 +179,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout GateProcessor::createParamet
         -60.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             if (value == -60.f)
                 return "-INFdB";
 
@@ -189,7 +190,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout GateProcessor::createParamet
 
             return text;
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue();
         }
     );
@@ -201,10 +202,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout GateProcessor::createParamet
         20.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value, 3) + "ms";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue();
         }
     );
@@ -216,14 +217,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout GateProcessor::createParamet
         500.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             if (value < 1000.f)
                 return contrast::pretifyValue(value, 3) + "ms";
 
             // Display as seconds if the value is over 1000 ms
             return contrast::pretifyValue(value / 1000.f, 3) + "s";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             if (text.endsWith("ms"))
                 return text.getFloatValue();
             else if (text.endsWith("s"))
@@ -265,8 +266,8 @@ void GateProcessor::process(juce::AudioBuffer<float>& buffer, bool isBypassed)
 {
     const juce::ScopedNoDenormals noDenormals;
 
-    const auto numChannels = buffer.getNumChannels();
-    const auto numSamples = buffer.getNumSamples();
+    const auto numChannels = static_cast<std::size_t>(buffer.getNumChannels());
+    const auto numSamples = static_cast<std::size_t>(buffer.getNumSamples());
 
     jassert(currentPeakFollowers.size() >= numChannels);
     jassert(delayedPeakFollowers.size() >= numChannels);
@@ -275,17 +276,17 @@ void GateProcessor::process(juce::AudioBuffer<float>& buffer, bool isBypassed)
 
     // Make sure to tell the host how much delay our plugin is introducing so
     // it can act accordingly.
-    setLatencySamples(latency);
+    setLatencySamples(static_cast<int>(latency));
 
-    for (int channel = 0; channel < numChannels; channel++)
+    for (std::size_t channel = 0; channel < numChannels; channel++)
     {
-        auto channelData = buffer.getWritePointer(channel);
+        auto channelData = buffer.getWritePointer(static_cast<int>(channel));
 
         jassert(currentPeakFollowers[channel] != nullptr);
         jassert(delayedPeakFollowers[channel] != nullptr);
         jassert(delayLines[channel]           != nullptr);
 
-        for (int i = 0; i < numSamples; i++)
+        for (std::size_t i = 0; i < numSamples; i++)
         {
             auto nonDelayedInput = channelData[i];
 
@@ -360,7 +361,7 @@ void GateProcessor::updateDelayLines()
 {
     // Recalculate the latency value which is the number of samples in the
     // attack time
-    latency = contrast::round(attack * getSampleRate() * 0.001f);
+    latency = contrast::round<std::size_t>(attack * getSampleRate() * 0.001f);
 
     // Resize the delay lines to match the latency
     for (auto& delayLine : delayLines)

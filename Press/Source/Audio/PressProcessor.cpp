@@ -20,7 +20,7 @@ PressProcessor::~PressProcessor()
 }
 
 //======================================================================================================================
-void PressProcessor::prepareToPlay(double sampleRate, int blockSize)
+void PressProcessor::prepareToPlay(double sampleRate, int /* blockSize */)
 {
     // Make sure the vectors have been resized to fit the current number of
     // channels.
@@ -40,18 +40,18 @@ void PressProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBu
     // Make sure the compressors are up-to-date.
     updateCompressors();
 
-    const auto numChannels = buffer.getNumChannels();
-    const auto numSamples = buffer.getNumSamples();
+    const auto numChannels = static_cast<std::size_t>(buffer.getNumChannels());
+    const auto numSamples = static_cast<std::size_t>(buffer.getNumSamples());
 
     jassert(compressors.size() >= numChannels);
 
-    for (int channel = 0; channel < numChannels; channel++)
+    for (std::size_t channel = 0; channel < numChannels; channel++)
     {
         jassert(compressors[channel] != nullptr);
 
-        auto channelData = buffer.getWritePointer(channel);
+        auto channelData = buffer.getWritePointer(static_cast<int>(channel));
 
-        for (int i = 0; i < numSamples; i++)
+        for (std::size_t i = 0; i < numSamples; i++)
             channelData[i] = compressors[channel]->processSample(channelData[i]);
     }
 }
@@ -66,7 +66,8 @@ void PressProcessor::numChannelsChanged()
     // Since we specified to only allow configurations with the same number of
     // input and output channels, we can use either the input or the output bus
     // to find the total number of available audio channels.
-    const auto numChannels = juce::jmax(getTotalNumInputChannels(), getTotalNumOutputChannels());
+    const auto numChannels = static_cast<std::size_t>(juce::jmax(getTotalNumInputChannels(),
+                                                                 getTotalNumOutputChannels()));
     compressors.resize(numChannels);
 }
 
@@ -91,7 +92,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParame
         0.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             auto text = contrast::pretifyValue(value, 3) + "dB";
 
             if (text[0] != '-')
@@ -99,7 +100,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParame
 
             return text;
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue();
         }
     );
@@ -111,10 +112,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParame
         1.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return "1 : " + contrast::pretifyValue(value, 2);
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.fromLastOccurrenceOf("1 : ", false, true).getFloatValue();
         }
     );
@@ -126,10 +127,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParame
         0.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value, 3) + "dB";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue();
         }
     );
@@ -141,10 +142,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParame
         20.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value, 3) + "ms";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue();
         }
     );
@@ -156,14 +157,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParame
         1000.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             if (value < 1000.f)
                 return contrast::pretifyValue(value, 3) + "ms";
 
             // Display as seconds if the value is over 1000 ms
             return contrast::pretifyValue(value / 1000.f, 3) + "s";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             if (text.endsWith("ms"))
                 return text.getFloatValue();
             else if (text.endsWith("s"))
@@ -188,10 +189,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParame
         0.f,
         juce::String(),
         juce::AudioProcessorParameter::genericParameter,
-        [this](float value, int) -> juce::String {
+        [](float value, int) -> juce::String {
             return contrast::pretifyValue(value, 3) + "dB";
         },
-        [this](const juce::String& text) -> float {
+        [](const juce::String& text) -> float {
             return text.getFloatValue();
         }
     );

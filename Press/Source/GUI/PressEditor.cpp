@@ -5,8 +5,8 @@
 //======================================================================================================================
 PressEditor::PressEditor(PressProcessor& p)
     :   AudioProcessorEditor(&p),
-        processor(p),
-        header(p.getPresetNames(), processor.getAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX, 0), contrastLaF)
+        pressProcessor(p),
+        header(p.getPresetNames(), pressProcessor.getAdditionalProperty(contrast::PropertyIDs::PRESET_INDEX, 0), contrastLaF)
 {
     // Tell this Component to use the custom LookAndFeel. All child Components
     // will also use it since this it our top-level component. Also need to
@@ -14,7 +14,7 @@ PressEditor::PressEditor(PressProcessor& p)
     // on black, or black on white).
     setLookAndFeel(&contrastLaF);
     contrastLaF.setUseWhiteAsPrimaryColour(
-        processor.getAdditionalProperty(contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR,
+        pressProcessor.getAdditionalProperty(contrast::PropertyIDs::USE_WHITE_AS_PRIMARY_COLOUR,
                                         contrastLaF.isUsingWhiteAsPrimaryColour())
     );
 
@@ -22,24 +22,24 @@ PressEditor::PressEditor(PressProcessor& p)
     // can handle events that happen in the header.
     addAndMakeVisible(header);
     header.onPresetIndexChanged = [this](const juce::String& presetName) {
-        processor.setCurrentPreset(presetName);
+        pressProcessor.setCurrentPreset(presetName);
     };
     header.onContrastChanged = [this]() {
-        processor.setAdditionalProperty("useWhiteAsPrimaryColour", contrastLaF.isUsingWhiteAsPrimaryColour());
+        pressProcessor.setAdditionalProperty("useWhiteAsPrimaryColour", contrastLaF.isUsingWhiteAsPrimaryColour());
     };
 
     // Intialise the sliders.
-    contrast::initialiseSlider(*this, processor.getAPVTS(), thresholdSlider, thresholdAttachment,
+    contrast::initialiseSlider(*this, pressProcessor.getAPVTS(), thresholdSlider, thresholdAttachment,
                                "Threshold", Press::ParameterIDs::THRESHOLD);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), ratioSlider,     ratioAttachment,
+    contrast::initialiseSlider(*this, pressProcessor.getAPVTS(), ratioSlider,     ratioAttachment,
                                "Ratio",     Press::ParameterIDs::RATIO);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), kneeSlider,      kneeAttachment,
+    contrast::initialiseSlider(*this, pressProcessor.getAPVTS(), kneeSlider,      kneeAttachment,
                                "Knee",      Press::ParameterIDs::KNEE);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), attackSlider,    attackAttachment,
+    contrast::initialiseSlider(*this, pressProcessor.getAPVTS(), attackSlider,    attackAttachment,
                                "Attack",    Press::ParameterIDs::ATTACK);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), releaseSlider,   releaseAttachment,
+    contrast::initialiseSlider(*this, pressProcessor.getAPVTS(), releaseSlider,   releaseAttachment,
                                "Release",   Press::ParameterIDs::RELEASE);
-    contrast::initialiseSlider(*this, processor.getAPVTS(), gainSlider,      gainAttachment,
+    contrast::initialiseSlider(*this, pressProcessor.getAPVTS(), gainSlider,      gainAttachment,
                                "Gain",      Press::ParameterIDs::GAIN);
 
     // Set the size of the UI.
