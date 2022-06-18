@@ -1,66 +1,85 @@
 # CONTRAST
 
-[![Build Status](https://dev.azure.com/ImJimmi/Contrast/_apis/build/status/ImJimmi.Contrast?branchName=master)](https://dev.azure.com/ImJimmi/Contrast/_build/latest?definitionId=3&branchName=master)
+A bundle of free, open-source audio plug-ins built with [JUCE](https://juce.com/).
 
-A bundle of free, open-source audio plugins built with [JUCE](https://juce.com/).
+[![LICENSE: MIT](https://img.shields.io/github/license/ImJimmi/Contrast?style=for-the-badge)](LICENSE)
 
-The plugins in this bundle are free for anyone to use and for anyone to edit. If you would like to contribute to this project you can make a [pull request](https://github.com/ImJimmi/Contrast/pulls), or raise an [issue](https://github.com/ImJimmi/Contrast/issues) to report a bug.
+[![Azure DevOps builds (branch)](https://img.shields.io/azure-devops/build/ImJimmi/368c7d2c-96f4-40c9-8470-644e4b4bab68/3/refs/pull/1/merge?label=AZURE%20PIPELINES&logo=Azure%20Pipelines&style=for-the-badge)](https://dev.azure.com/ImJimmi/Contrast/_build) ![GitHub last commit](https://img.shields.io/github/last-commit/ImJimmi/Contrast?style=for-the-badge)
 
-## PLUGINS
-| PLUGIN | DESCRIPTION |
+## PLUG-INS
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/ImJimmi/Contrast?label=LATEST%20VERSION&style=for-the-badge)
+![GitHub Release Date](https://img.shields.io/github/release-date/ImJimmi/Contrast?style=for-the-badge)
+
+[![Download](https://img.shields.io/github/v/release/ImJimmi/Contrast?label=DOWNLOAD&style=for-the-badge&logo=GitHub&color=success)](https://github.com/ImJimmi/Contrast/releases/latest)
+
+| NAME | DESCRIPTION |
 | ------ | ----------- |
 | [GATE](Gate/) | Look-ahead noise gate with attack and release. |
 | [PITCH](Pitch/) | Pitch shifter. |
-| [PRESS](Press/) | Simple compressor. |
-| [VERB](Verb/) | Simple mono or stereo reverb. |
-
-## DOWNLOAD
-![GitHub All Releases](https://img.shields.io/github/downloads/ImJimmi/Contrast/total?label=Total%20Downloads)
-
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/ImJimmi/Contrast?label=Latest%20Version)
-![GitHub Releases](https://img.shields.io/github/downloads/ImJimmi/Contrast/latest/total?label=Latest%20Version%20Downloads)
-
-[Download Latest Version](https://github.com/ImJimmi/Contrast/releases/latest)
+| [PRESS](Press/) | Straightforward compressor. |
+| [VERB](Verb/) | Straightforward mono or stereo reverb. |
 
 ## REQUIREMENTS
-#### WINDOWS
-- VST3 compatible host
-- Windows 7 or later (recommended, earlier version may also work)
-#### MAC
-- VST3 compatible host
-- AU compatible host
+
+### ![Mac OS](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=F0F0F0)
+
+- VST3 or AU compatible host
 - OSX 10.7 or later
 
-#### BUILDING FROM SOURCE
-- Latest version of [JUCE](https://github.com/juce-framework/JUCE)
-- A compatible C++ compiler
+### ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
-## HOW TO USE
-### BUILDING
-Each of the plugins in the bundle has its own subdirectory. Each of the subdirectories contains a `Source/` folder, a `.jucer` file, and any other resources for that particular plugin. You should use the [Projucer](https://juce.com/discover/projucer) to open the `.jucer` file to then create a project for your chosen IDE.
+- VST3 compatible host
+- Windows 7 or later
 
-This repository also contains the [`contrast_shared_resources/`](https://github.com/ImJimmi/Contrast/tree/master/contrast_shared_resources) directory which is formatted as a JUCE module for easy integration. After opening the `.jucer` file in the Projucer you may need to set the proper search path to the directory.
+## INSTALLING
 
-### INSTALLING
-To install any of the pre-built plugins, first download the latest release for your platform from the link above. The `.zip` file will contain each of the plugins in the bundle in each format that is available (x64 and Win32 on Windows, VST3 and AU on Mac). Extract the formats that are compatible with your system and place them in a directory where your DAW can find them. Below is a list of common plugin directories:
+1. [Download Latest Version](https://github.com/ImJimmi/Contrast/releases/latest)
+2. Extract files to relevant directories:
 
-#### Windows
-| Format | Directory |
+### ![Mac OS](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=F0F0F0)
+
+| FORMAT | DIRECTORY |
 | ------ | --------- |
-| VST | C:\Program Files\VstPlugins |
-| VST | C:\Program Files\Steinberg\VstPlugins |
-| VST | C:\Program Files\Common Files\VST2 |
-| VST | C:\Program Files\Common Files\Steinberg\VST2 |
-| VST3 | C:\Program Files\Common Files\VST3 |
+| VST3 | `~/Library/Audio/Plug-Ins/VST3`<br>`Macintosh HD/Library/Audio/Plug-Ins/VST3` |
+| AU | `~/Library/Audio/Plug-Ins/Components`<br>`Macintosh HD/Library/Audio/Plug-Ins/Components` |
 
-(For Win32 plugins, replace `Program Files\` above with `Program Files(x86)\`).
+### ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
-#### MacOS
-| Format | Directory |
+| FORMAT | DIRECTORY |
 | ------ | --------- |
-| VST | ~/Library/Audio/Plug-Ins/VST |
-| VST | Macintosh HD/Library/Audio/Plug-Ins/VST |
-| VST3 | ~/Library/Audio/Plug-Ins/VST3 |
-| VST3 | Macintosh HD/Library/Audio/Plug-Ins/VST3 |
-| AU | ~/Library/Audio/Plug-Ins/Components |
-| AU | Macintosh HD/Library/Audio/Plug-Ins/Components |
+| VST3<br>x64 | `C:\Program Files\Common Files\VST3` |
+| VST3<br>Win32 (x86) | `C:\Program Files(x86)\Common Files\VST3` |
+
+## BUILDING
+
+### ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+
+```bash
+code .
+```
+
+- (Recommended) Install [C/C++ Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack)
+
+### ![Xcode](https://img.shields.io/badge/Xcode-007ACC?style=for-the-badge&logo=Xcode&logoColor=white)
+
+```bash
+cmake -Bbuild -GXcode -DJUCE_PATH="<path_to_JUCE>"
+```
+
+- Open `build/contrast.xcodeproj`
+
+### ![Visual Studio](https://img.shields.io/badge/Visual%20Studio-5C2D91.svg?style=for-the-badge&logo=visual-studio&logoColor=white)
+
+```bash
+cmake -Bbuild -DJUCE_PATH="<path_to_JUCE>"
+```
+
+- Open `build/contrast.sln`
+
+### ![CMake](https://img.shields.io/badge/CMake-%23008FBA.svg?style=for-the-badge&logo=cmake&logoColor=white)
+
+```bash
+cmake -Bbuild -GNinja -DJUCE_PATH="<path_to_JUCE>"
+cmake --build build --config Debug
+```
