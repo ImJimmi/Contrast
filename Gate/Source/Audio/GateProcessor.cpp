@@ -80,7 +80,7 @@ void GateProcessor::numChannelsChanged()
     // Since we specified to only allow configurations with the same number of
     // input and output channels, we can use either the input or the output bus
     // to find the total number of available audio channels.
-    const auto numChannels = getTotalNumInputChannels();
+    const auto numChannels = juce::jmax(getTotalNumInputChannels(), getTotalNumOutputChannels());
 
     currentPeakFollowers  .resize(numChannels);
     delayedPeakFollowers  .resize(numChannels);

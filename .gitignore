@@ -1,6 +1,15 @@
+# CMake
+build/
+
+# VSCode
+.vscode/settings.json
+
 # JUCE-Specific Directories
 Builds/
 JuceLibraryCode/
+
+# macOS
+.DS_Store
 
 # Prerequisites
 *.d
