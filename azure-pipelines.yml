@@ -1,9 +1,4 @@
-# Universal Windows Platform
-# Build a Universal Windows Platform project using Visual Studio.
-# Add steps that test and distribute an app, save build artifacts, and more:
-# https://aka.ms/yaml
-
-trigger:
+pr:
 - master
 
 jobs:
@@ -36,36 +31,14 @@ jobs:
           }
 
     - task: CmdLine@2
-      displayName: "Task 2: Re-save .jucer Files"
+      displayName: "Task 2: Build"
       inputs:
         script: |
-          echo "Setting Projucer search paths..."
-          $(Pipeline.Workspace)\JUCE\Projucer.exe --set-global-search-path windows defaultJuceModulePath "$(Pipeline.Workspace)\JUCE\modules"
-
-          echo "Deleting unneeded JUCE folders..."
-          rd JUCE\extras /s /q
-          rd JUCE\examples /s /q
-
-          echo "Re-saving .jucer files..."
-          for /r %%v in (*.jucer) do $(Pipeline.Workspace)\JUCE\Projucer.exe --resave "%%v"
-
-    - task: MSBuild@1
-      displayName: "Task 3: Build x64"
-      inputs:
-        solution: '**\*.sln'
-        msbuildArchitecture: 'x64'
-        platform: 'x64'
-        configuration: 'Release64'
-
-    - task: MSBuild@1
-      displayName: "Task 4: Build Win32"
-      inputs:
-        solution: '**\*.sln'
-        platform: 'Win32'
-        configuration: 'ReleaseWin32'
+          cmake -Bbuild -DJUCE_PATH="$(Pipeline.Workspace)/JUCE/"
+          cmake --build build --config Release
 
     - task: CmdLine@2
-      displayName: "Task 5: Move Binaries"
+      displayName: "Task 3: Move Binaries"
       inputs:
         script: |
           mkdir $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows
@@ -76,13 +49,13 @@ jobs:
           )
 
     - task: PowerShell@2
-      displayName: "Task 6: Compress Binaries"
+      displayName: "Task 4: Compress Binaries"
       inputs:
         targetType: 'inline'
         script: Compress-Archive -Path $(Build.ArtifactStagingDirectory)\* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_Windows.zip
 
     - task: GitHubRelease@1
-      displayName: "Task 7: Upload to GitHub"
+      displayName: "Task 5: Upload to GitHub"
       inputs:
         gitHubConnection: 'GitHub PAT'
         repositoryName: '$(Build.Repository.Name)'
@@ -124,43 +97,26 @@ jobs:
         failOnStderr: true
 
     - task: CmdLine@2
-      displayName: "Task 2: Re-save .jucer Files"
+      displayName: "Task 2: Build"
       inputs:
         script: |
-          echo "Changing Projucer permissions..."
-          chmod +x $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer
+          cmake -Bbuild -GXcode -DJUCE_PATH="$(Pipeline.Workspace)/JUCE/"
+          cmake --build build --config Release
 
-          echo "Setting Projucer paths..."
-          $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "$(Pipeline.Workspace)/JUCE/modules"
-
-          echo "Re-saving .jucer files..."
-          for file in $(find $PWD -name '*.jucer'); do $(Pipeline.Workspace)/JUCE/Projucer.app/Contents/MacOS/Projucer --resave $file; done
-
-    - task: CmdLine@2
-      displayName: "Task 3: Xcode Build"
-      inputs:
-        script: |
           mkdir $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS
 
-          for pluginName in */ ; do
-            results=(`find "$(Build.Repository.LocalPath)/${pluginName}" -name '*.xcodeproj'`)
-            if [ ${#results[@]} -gt 0 ]; then
-              echo "Building Xcode Project ${pluginName%/}..."
-              xcodebuild -project "${pluginName}Builds/MacOSX/${pluginName%/}.xcodeproj" -target "${pluginName%/} - All" -configuration "Release"
-
-              mv /Users/runner/Library/Audio/Plug-Ins/Components/${pluginName%/}.component $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS/${pluginName%/}.component
-              mv /Users/runner/Library/Audio/Plug-Ins/VST3/${pluginName%/}.vst3 $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS/${pluginName%/}.vst3
-            fi
+          for plugin_path in `find . -name "*.vst3" -o -name "*.component"` ; do
+            mv ${plugin_path} $(Build.ArtifactStagingDirectory)/Contrast_$(version_tag)_MacOS
           done
 
     - task: PowerShell@2
-      displayName: "Task 4: Compress Binaries"
+      displayName: "Task 3: Compress Binaries"
       inputs:
         targetType: 'inline'
         script: Compress-Archive -Path $(Build.ArtifactStagingDirectory)/* -DestinationPath $(Build.ArtifactStagingDirectory)\Contrast_$(version_tag)_MacOS.zip
 
     - task: GitHubRelease@1
-      displayName: "Task 5: Upload to GitHub"
+      displayName: "Task 4: Upload to GitHub"
       inputs:
         gitHubConnection: 'GitHub PAT'
         repositoryName: '$(Build.Repository.Name)'
