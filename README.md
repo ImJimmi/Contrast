@@ -4,7 +4,7 @@ A bundle of free, open-source audio plug-ins built with [JUCE](https://juce.com/
 
 [![LICENSE: MIT](https://img.shields.io/github/license/ImJimmi/Contrast?style=for-the-badge)](LICENSE)
 
-[![Azure DevOps builds (branch)](https://img.shields.io/azure-devops/build/ImJimmi/368c7d2c-96f4-40c9-8470-644e4b4bab68/3/refs/pull/1/merge?label=AZURE%20PIPELINES&logo=Azure%20Pipelines&style=for-the-badge)](https://dev.azure.com/ImJimmi/Contrast/_build) ![GitHub last commit](https://img.shields.io/github/last-commit/ImJimmi/Contrast?style=for-the-badge)
+[![Azure DevOps builds](https://img.shields.io/azure-devops/build/ImJimmi/368c7d2c-96f4-40c9-8470-644e4b4bab68/3?label=Azure%20Pipelines&logo=azure%20pipelines&style=for-the-badge)](https://dev.azure.com/ImJimmi/Contrast/_build) ![GitHub last commit](https://img.shields.io/github/last-commit/ImJimmi/Contrast?style=for-the-badge)
 
 ## PLUG-INS
 
