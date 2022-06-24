@@ -142,47 +142,51 @@ void PluginProcessor::parameterChanged(const String& parameterID, float)
 AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout() const
 {
     auto semitonesParam = std::make_unique<AudioParameterInt>(
-        "semitones",
+        juce::ParameterID{
+            "semitones",
+            1,
+        },
         "Semitones",
         -24, 24, 0,
-        String(),
-        [](int value, int) -> String {
-            return String(value);
-        },
-        [](const String& text) -> int {
-            return text.getIntValue();
-        }
-    );
-    
+        juce::AudioParameterIntAttributes{}
+            .withStringFromValueFunction([](int value, int) -> String {
+                return String(value);
+            })
+            .withValueFromStringFunction([](const String& text) -> int {
+                return text.getIntValue();
+            }));
+
     auto centsParam = std::make_unique<AudioParameterFloat>(
-        "cents",
+        juce::ParameterID{
+            "cents",
+            1,
+        },
         "Cents",
         NormalisableRange<float>(-100.f, 100.f),
         0.f,
-        String(),
-        AudioProcessorParameter::genericParameter,
-        [](float value, int) -> String {
-            return contrast::pretifyValue(value, 3) + "%";
-        },
-        [](const String& text) -> float {
-            return text.getFloatValue();
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> String {
+                return contrast::pretifyValue(value, 3) + "%";
+            })
+            .withValueFromStringFunction([](const String& text) -> float {
+                return text.getFloatValue();
+            }));
 
     auto mixParam = std::make_unique<AudioParameterFloat>(
-        "mix",
+        juce::ParameterID{
+            "mix",
+            1,
+        },
         "Mix",
         NormalisableRange<float>(0.f, 1.f),
         1.f,
-        String(),
-        AudioProcessorParameter::genericParameter,
-        [](float value, int) -> String {
-            return contrast::pretifyValue(value * 100.f, 3);
-        },
-        [](const String& text) -> float {
-            return text.getFloatValue() / 100.f;
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> String {
+                return contrast::pretifyValue(value * 100.f, 3);
+            })
+            .withValueFromStringFunction([](const String& text) -> float {
+                return text.getFloatValue() / 100.f;
+            }));
 
     // In this plugin we only have one, unnamed group that all of our parameters
     // we live in.

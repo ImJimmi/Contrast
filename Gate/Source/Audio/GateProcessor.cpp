@@ -173,74 +173,77 @@ void GateProcessor::parameterChanged(const juce::String& parameterID, float /* n
 juce::AudioProcessorValueTreeState::ParameterLayout GateProcessor::createParameterLayout() const
 {
     auto thresholdParam = std::make_unique<juce::AudioParameterFloat>(
-        Gate::ParameterIDs::THRESHOLD,
+        juce::ParameterID{
+            Gate::ParameterIDs::THRESHOLD,
+            1,
+        },
         "Threshold",
         juce::NormalisableRange<float>(-60.f, 0.f),
         -60.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            if (value == -60.f)
-                return "-INFdB";
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                if (value == -60.f)
+                    return "-INFdB";
 
-            auto text = contrast::pretifyValue(value, 3) + "dB";
+                auto text = contrast::pretifyValue(value, 3) + "dB";
 
-            if (text[0] != '-')
-                text = "-" + text;
+                if (text[0] != '-')
+                    text = "-" + text;
 
-            return text;
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue();
-        }
-    );
+                return text;
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue();
+            }));
 
     auto attackParam = std::make_unique<juce::AudioParameterFloat>(
-        Gate::ParameterIDs::ATTACK,
+        juce::ParameterID{
+            Gate::ParameterIDs::ATTACK,
+            1,
+        },
         "Attack",
         juce::NormalisableRange<float>(1.f, 300.f),
         20.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value, 3) + "ms";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue();
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value, 3) + "ms";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue();
+            }));
 
     auto releaseParam = std::make_unique<juce::AudioParameterFloat>(
-        Gate::ParameterIDs::RELEASE,
+        juce::ParameterID{
+            Gate::ParameterIDs::RELEASE,
+            1,
+        },
         "Release",
         juce::NormalisableRange<float>(Gate::releaseMin<float>, Gate::releaseMax<float>),
         500.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            if (value < 1000.f)
-                return contrast::pretifyValue(value, 3) + "ms";
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                if (value < 1000.f)
+                    return contrast::pretifyValue(value, 3) + "ms";
 
-            // Display as seconds if the value is over 1000 ms
-            return contrast::pretifyValue(value / 1000.f, 3) + "s";
-        },
-        [](const juce::String& text) -> float {
-            if (text.endsWith("ms"))
-                return text.getFloatValue();
-            else if (text.endsWith("s"))
-                return text.getFloatValue() * 1000.f;
+                // Display as seconds if the value is over 1000 ms
+                return contrast::pretifyValue(value / 1000.f, 3) + "s";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                if (text.endsWith("ms"))
+                    return text.getFloatValue();
+                else if (text.endsWith("s"))
+                    return text.getFloatValue() * 1000.f;
 
-            // For value where the units aren't specified (such as from user
-            // input), assume that values less than 20 is in seconds, and
-            // anything else is in milliseconds
-            auto value = text.getFloatValue();
+                // For value where the units aren't specified (such as from user
+                // input), assume that values less than 20 is in seconds, and
+                // anything else is in milliseconds
+                auto value = text.getFloatValue();
 
-            if (value < 20.f)
-                return value * 1000.f;
+                if (value < 20.f)
+                    return value * 1000.f;
 
-            return value;
-        }
-    );
+                return value;
+            }));
 
     // In this plugin we only have one, unnamed group that all of our parameters
     // we live in.

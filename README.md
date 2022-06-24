@@ -11,6 +11,8 @@ A bundle of free, open-source audio plug-ins built with [JUCE](https://juce.com/
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ImJimmi/Contrast?label=LATEST%20VERSION&style=for-the-badge)
 ![GitHub Release Date](https://img.shields.io/github/release-date/ImJimmi/Contrast?style=for-the-badge)
 
+[CHANGES](CHANGES.md)
+
 [![Download](https://img.shields.io/github/v/release/ImJimmi/Contrast?label=DOWNLOAD&style=for-the-badge&logo=GitHub&color=success)](https://github.com/ImJimmi/Contrast/releases/latest)
 
 | NAME | DESCRIPTION |
