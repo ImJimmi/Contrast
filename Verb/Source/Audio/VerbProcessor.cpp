@@ -106,79 +106,84 @@ juce::StringArray VerbProcessor::getPresetNames() const
 juce::AudioProcessorValueTreeState::ParameterLayout VerbProcessor::createParameterLayout() const
 {
     auto sizeParam = std::make_unique<juce::AudioParameterFloat>(
-        Verb::ParameterIDs::SIZE,
+        juce::ParameterID{
+            Verb::ParameterIDs::SIZE,
+            1,
+        },
         "Size",
         juce::NormalisableRange<float>(0.f, 1.f),
         0.5f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value * 100.f, 3) + "%";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue() / 100.f;
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value * 100.f, 3) + "%";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue() / 100.f;
+            }));
 
     auto dampingParam = std::make_unique<juce::AudioParameterFloat>(
-        Verb::ParameterIDs::DAMPING,
+        juce::ParameterID{
+            Verb::ParameterIDs::DAMPING,
+            1,
+        },
         "Damping",
         juce::NormalisableRange<float>(0.f, 1.f),
         0.5f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value * 100.f, 3) + "%";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue() / 100.f;
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value * 100.f, 3) + "%";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue() / 100.f;
+            }));
 
     auto wetParam = std::make_unique<juce::AudioParameterFloat>(
-        Verb::ParameterIDs::WET,
+        juce::ParameterID{
+            Verb::ParameterIDs::WET,
+            1,
+        },
         "Wet",
         juce::NormalisableRange<float>(0.f, 1.f),
         0.33f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value * 100.f, 3) + "%";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue() / 100.f;
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value * 100.f, 3) + "%";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue() / 100.f;
+            }));
 
     auto dryParam = std::make_unique<juce::AudioParameterFloat>(
-        Verb::ParameterIDs::DRY,
+        juce::ParameterID{
+            Verb::ParameterIDs::DRY,
+            1,
+        },
         "Dry",
         juce::NormalisableRange<float>(0.f, 1.f),
         0.4f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value * 100.f, 3) + "%";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue() / 100.f;
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value * 100.f, 3) + "%";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue() / 100.f;
+            }));
 
     auto widthParam = std::make_unique<juce::AudioParameterFloat>(
-        Verb::ParameterIDs::WIDTH,
+        juce::ParameterID{
+            Verb::ParameterIDs::WIDTH,
+            1,
+        },
         "Width",
         juce::NormalisableRange<float>(0.f, 1.f),
         0.75f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value * 100.f, 3) + "%";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue() / 100.f;
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value * 100.f, 3) + "%";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue() / 100.f;
+            }));
 
     // In this plugin we only have one, unnamed group that all of our parameters
     // will live in.

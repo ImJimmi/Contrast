@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(contrast VERSION 1.1.0)
+project(contrast VERSION 1.2.0)
 
 # ==============================================================================
 set(JUCE_PATH $ENV{HOME}/JUCE CACHE FILEPATH "Path to top-level JUCE directory.")

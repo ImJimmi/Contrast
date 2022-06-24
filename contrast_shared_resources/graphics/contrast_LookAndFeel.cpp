@@ -1,10 +1,10 @@
-#pragma once
+#include "contrast_LookAndFeel.h"
 
 //======================================================================================================================
 namespace contrast
 {
     //==================================================================================================================
-    juce::Font getArialBlack()
+    static juce::Font getArialBlack()
     {
 #if JUCE_WINDOWS
         return juce::Font{"Arial", 18.f, 0}.withTypefaceStyle("Black");

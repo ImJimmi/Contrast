@@ -86,116 +86,122 @@ juce::StringArray PressProcessor::getPresetNames() const
 juce::AudioProcessorValueTreeState::ParameterLayout PressProcessor::createParameterLayout() const
 {
     auto thresholdParam = std::make_unique<juce::AudioParameterFloat>(
-        Press::ParameterIDs::THRESHOLD,
+        juce::ParameterID{
+            Press::ParameterIDs::THRESHOLD,
+            1,
+        },
         "Threshold",
         juce::NormalisableRange<float>(-60.f, 0.f),
         0.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            auto text = contrast::pretifyValue(value, 3) + "dB";
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                auto text = contrast::pretifyValue(value, 3) + "dB";
 
-            if (text[0] != '-')
-                text = "-" + text;
+                if (text[0] != '-')
+                    text = "-" + text;
 
-            return text;
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue();
-        }
-    );
+                return text;
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue();
+            }));
 
     auto ratioParam = std::make_unique<juce::AudioParameterFloat>(
-        Press::ParameterIDs::RATIO,
+        juce::ParameterID{
+            Press::ParameterIDs::RATIO,
+            1,
+        },
         "Ratio",
         juce::NormalisableRange<float>(1.f, 20.f),
         1.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return "1 : " + contrast::pretifyValue(value, 2);
-        },
-        [](const juce::String& text) -> float {
-            return text.fromLastOccurrenceOf("1 : ", false, true).getFloatValue();
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return "1 : " + contrast::pretifyValue(value, 2);
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.fromLastOccurrenceOf("1 : ", false, true).getFloatValue();
+            }));
 
     auto kneeParam = std::make_unique<juce::AudioParameterFloat>(
-        Press::ParameterIDs::KNEE,
+        juce::ParameterID{
+            Press::ParameterIDs::KNEE,
+            1,
+        },
         "Knee",
         juce::NormalisableRange<float>(0.f, 20.f),
         0.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value, 3) + "dB";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue();
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value, 3) + "dB";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue();
+            }));
 
     auto attackParam = std::make_unique<juce::AudioParameterFloat>(
-        Press::ParameterIDs::ATTACK,
+        juce::ParameterID{
+            Press::ParameterIDs::ATTACK,
+            1,
+        },
         "Attack",
         juce::NormalisableRange<float>(1.f, 300.f),
         20.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value, 3) + "ms";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue();
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value, 3) + "ms";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue();
+            }));
 
     auto releaseParam = std::make_unique<juce::AudioParameterFloat>(
-        Press::ParameterIDs::RELEASE,
+        juce::ParameterID{
+            Press::ParameterIDs::RELEASE,
+            1,
+        },
         "Release",
         juce::NormalisableRange<float>(20.f, 5000.f),
         1000.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            if (value < 1000.f)
-                return contrast::pretifyValue(value, 3) + "ms";
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                if (value < 1000.f)
+                    return contrast::pretifyValue(value, 3) + "ms";
 
-            // Display as seconds if the value is over 1000 ms
-            return contrast::pretifyValue(value / 1000.f, 3) + "s";
-        },
-        [](const juce::String& text) -> float {
-            if (text.endsWith("ms"))
-                return text.getFloatValue();
-            else if (text.endsWith("s"))
-                return text.getFloatValue() * 1000.f;
+                // Display as seconds if the value is over 1000 ms
+                return contrast::pretifyValue(value / 1000.f, 3) + "s";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                if (text.endsWith("ms"))
+                    return text.getFloatValue();
+                else if (text.endsWith("s"))
+                    return text.getFloatValue() * 1000.f;
 
-            // For value where the units aren't specified (such as from user
-            // input), assume that values less than 20 is in seconds, and
-            // anything else is in milliseconds
-            auto value = text.getFloatValue();
+                // For value where the units aren't specified (such as from user
+                // input), assume that values less than 20 is in seconds, and
+                // anything else is in milliseconds
+                auto value = text.getFloatValue();
 
-            if (value < 20.f)
-                return value * 1000.f;
+                if (value < 20.f)
+                    return value * 1000.f;
 
-            return value;
-        }
-    );
-    
+                return value;
+            }));
+
     auto gainParam = std::make_unique<juce::AudioParameterFloat>(
-        Press::ParameterIDs::GAIN,
+        juce::ParameterID{
+            Press::ParameterIDs::GAIN,
+            1,
+        },
         "Gain",
         juce::NormalisableRange<float>(-18.f, 18.f),
         0.f,
-        juce::String(),
-        juce::AudioProcessorParameter::genericParameter,
-        [](float value, int) -> juce::String {
-            return contrast::pretifyValue(value, 3) + "dB";
-        },
-        [](const juce::String& text) -> float {
-            return text.getFloatValue();
-        }
-    );
+        juce::AudioParameterFloatAttributes{}
+            .withStringFromValueFunction([](float value, int) -> juce::String {
+                return contrast::pretifyValue(value, 3) + "dB";
+            })
+            .withValueFromStringFunction([](const juce::String& text) -> float {
+                return text.getFloatValue();
+            }));
 
     // In this plugin we only have one, unnamed group that all of our parameters
     // we live in.
