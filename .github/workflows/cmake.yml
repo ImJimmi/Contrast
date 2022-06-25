@@ -3,6 +3,8 @@ name: CMake
 on:
   pull_request:
     branches: [ "master" ]
+  push:
+    branches: [ "master" ]
 
 env:
   BUILD_TYPE: Release
