@@ -4,7 +4,8 @@ A bundle of free, open-source audio plug-ins built with [JUCE](https://juce.com/
 
 [![LICENSE: MIT](https://img.shields.io/github/license/ImJimmi/Contrast?style=for-the-badge)](LICENSE)
 
-[![Azure DevOps builds](https://img.shields.io/azure-devops/build/ImJimmi/368c7d2c-96f4-40c9-8470-644e4b4bab68/3?label=Azure%20Pipelines&logo=azure%20pipelines&style=for-the-badge)](https://dev.azure.com/ImJimmi/Contrast/_build) ![GitHub last commit](https://img.shields.io/github/last-commit/ImJimmi/Contrast?style=for-the-badge)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ImJimmi/Contrast/CMake?logo=github&style=for-the-badge)](https://github.com/ImJimmi/Contrast/actions)
+![GitHub last commit](https://img.shields.io/github/last-commit/ImJimmi/Contrast?style=for-the-badge)
 
 ## PLUG-INS
 
@@ -55,6 +56,11 @@ A bundle of free, open-source audio plug-ins built with [JUCE](https://juce.com/
 
 ## BUILDING
 
+```bash
+git clone --recurse-submodules git@github.com:ImJimmi/Contrast.git
+cd Contrast
+```
+
 ### ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 
 ```bash
@@ -66,7 +72,7 @@ code .
 ### ![Xcode](https://img.shields.io/badge/Xcode-007ACC?style=for-the-badge&logo=Xcode&logoColor=white)
 
 ```bash
-cmake -Bbuild -GXcode -DJUCE_PATH="<path_to_JUCE>"
+cmake -Bbuild -GXcode
 ```
 
 - Open `build/contrast.xcodeproj`
@@ -74,7 +80,7 @@ cmake -Bbuild -GXcode -DJUCE_PATH="<path_to_JUCE>"
 ### ![Visual Studio](https://img.shields.io/badge/Visual%20Studio-5C2D91.svg?style=for-the-badge&logo=visual-studio&logoColor=white)
 
 ```bash
-cmake -Bbuild -DJUCE_PATH="<path_to_JUCE>"
+cmake -Bbuild
 ```
 
 - Open `build/contrast.sln`
@@ -82,6 +88,6 @@ cmake -Bbuild -DJUCE_PATH="<path_to_JUCE>"
 ### ![CMake](https://img.shields.io/badge/CMake-%23008FBA.svg?style=for-the-badge&logo=cmake&logoColor=white)
 
 ```bash
-cmake -Bbuild -GNinja -DJUCE_PATH="<path_to_JUCE>"
+cmake -Bbuild -GNinja
 cmake --build build --config Debug
 ```
