@@ -2,9 +2,9 @@ name: CMake
 
 on:
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   push:
-    branches: [ "master" ]
+    branches: ["master"]
 
 env:
   BUILD_TYPE: Release
@@ -14,100 +14,100 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: 'true'
+      - uses: actions/checkout@v3
+        with:
+          submodules: "true"
 
-    - name: Configure CMake
-      run: cmake -B ${{ github.workspace }}\build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DDUMP_VERSION=ON
+      - name: Configure CMake
+        run: cmake -B ${{ github.workspace }}\build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DDUMP_VERSION=ON
 
-    - name: Build
-      run: cmake --build ${{ github.workspace }}\build --config ${{ env.BUILD_TYPE }}
-      
-    - name: Configure Environment
-      shell: pwsh
-      run: |
-        $VER = type VERSION.txt
-        echo $VER
-        echo "VERSION=$VER" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Build
+        run: cmake --build ${{ github.workspace }}\build --config ${{ env.BUILD_TYPE }}
 
-        $VER_FULL = $VER + ".${{ github.run_id }}"
-        echo $VER_FULL
-        echo "VERSION_FULL=$VER_FULL" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Configure Environment
+        shell: pwsh
+        run: |
+          $VER = type VERSION.txt
+          echo $VER
+          echo "VERSION=$VER" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-        echo "PRERELEASE=${{ github.event_name == 'pull_request' }}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-      
-    - name: Stage Artifacts
-      shell: pwsh
-      run: |
+          $VER_FULL = $VER + ".${{ github.run_id }}"
+          echo $VER_FULL
+          echo "VERSION_FULL=$VER_FULL" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+          echo "PRERELEASE=${{ github.event_name == 'pull_request' }}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Stage Artifacts
+        shell: pwsh
+        run: |
           $STAGING_DIR = "${{ github.workspace }}\staging\Contrast_${{ env.VERSION }}_Windows"
           New-Item $STAGING_DIR -ItemType Directory
-          
+
           Get-ChildItem -Path ${{ github.workspace }}\build -Recurse -Include "*.vst3" | Move-Item -Destination $STAGING_DIR
-          
+
           $OUTPUT = "${{ github.workspace }}\Contrast_${{ env.VERSION }}_Windows.zip"
           Compress-Archive -Path ${{ github.workspace }}\staging\* -DestinationPath $OUTPUT
-          
-          echo "ARTIFACT_PATH=$OUTPUT" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Publish
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        artifactErrorsFailBuild: true
-        artifacts: "${{ env.ARTEFACT_PATH }}"
-        generateReleaseNotes: true
-        prerelease: ${{ env.PRERELEASE }}
-        tag: ${{ env.VERSION_FULL }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+          echo "ARTEFACT_PATH=$OUTPUT" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Publish
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: "${{ env.ARTEFACT_PATH }}"
+          generateReleaseNotes: true
+          prerelease: ${{ env.PRERELEASE }}
+          tag: ${{ env.VERSION_FULL }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos:
     runs-on: macos-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: 'true'
-        
-    - name: Configure CMake
-      run: cmake -B ${{ github.workspace }}/build -GXcode -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DDUMP_VERSION=ON
-      
-    - name: Build
-      run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }}
-      
-    - name: Configure Environment
-      shell: pwsh
-      run: |
-        $VER = type VERSION.txt
-        echo $VER
-        echo "VERSION=$VER" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: actions/checkout@v3
+        with:
+          submodules: "true"
 
-        $VER_FULL = $VER + ".${{ github.run_id }}"
-        echo $VER_FULL
-        echo "VERSION_FULL=$VER_FULL" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Configure CMake
+        run: cmake -B ${{ github.workspace }}/build -GXcode -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DDUMP_VERSION=ON
 
-        echo "PRERELEASE=${{ github.event_name == 'pull_request' }}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }}
 
-    - name: Stage Artifacts
-      shell: pwsh
-      run: |
+      - name: Configure Environment
+        shell: pwsh
+        run: |
+          $VER = type VERSION.txt
+          echo $VER
+          echo "VERSION=$VER" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+          $VER_FULL = $VER + ".${{ github.run_id }}"
+          echo $VER_FULL
+          echo "VERSION_FULL=$VER_FULL" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+          echo "PRERELEASE=${{ github.event_name == 'pull_request' }}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Stage Artifacts
+        shell: pwsh
+        run: |
           $STAGING_DIR = "${{ github.workspace }}/staging/Contrast_${{ env.VERSION }}_macOS"
           New-Item $STAGING_DIR -ItemType Directory
 
           Get-ChildItem -Path ${{ github.workspace }}/build -Recurse -Include "*.vst3", "*.component" | Move-Item -Destination $STAGING_DIR
-          
+
           $OUTPUT = "${{ github.workspace }}/Contrast_${{ env.VERSION }}_macOS.zip"
           Compress-Archive -Path ${{ github.workspace }}/staging/* -DestinationPath $OUTPUT
-          
-          echo "ARTIFACT_PATH=$OUTPUT" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Publish
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        artifactErrorsFailBuild: true
-        artifacts: "${{ env.ARTEFACT_PATH }}"
-        generateReleaseNotes: true
-        prerelease: ${{ env.PRERELEASE }}
-        tag: ${{ env.VERSION_FULL }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+          echo "ARTEFACT_PATH=$OUTPUT" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Publish
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: "${{ env.ARTEFACT_PATH }}"
+          generateReleaseNotes: true
+          prerelease: ${{ env.PRERELEASE }}
+          tag: ${{ env.VERSION_FULL }}
+          token: ${{ secrets.GITHUB_TOKEN }}
